@@ -39,6 +39,7 @@ int RightJoyMH; //Main Right X
 int RightJoySH; //Partner Right X
 string batteryMain; //String for lcd
 string batteryPowerExpander; //String for lcd
+bool mobileState = false;
 
 
 int JoyClear(int origVal) { //intake current joystick position
@@ -92,15 +93,30 @@ void Base(){
 }
 
 void Lift(){
-
+	motor[TopLeft] = PowerCap(vexRT[Btn6U]*127 + vexRT[Btn6D]*-127);
+	motor[TopRight] = PowerCap(vexRT[Btn6U]*127 + vexRT[Btn6D]*-127);
+	motor[BottomLeft] = PowerCap(vexRT[Btn6U]*127 + vexRT[Btn6D]*-127);
+	motor[BottomRight] = PowerCap(vexRT[Btn6U]*127 + vexRT[Btn6D]*-127);
 }
 
 void Cone(){
-
+	motor[Claw] = PowerCap(vexRT[Btn7U]*127 + vexRT[Btn7D]*-127);
+	motor[Chainbar] = PowerCap(vexRT[Btn5U]*127 + vexRT[Btn5D]*-127);
 }
 
 void Goal(){
-
+	if(mobileState == 0){
+		waitUntil(vexRT[Btn8R] == 0);
+		mobileState = true;
+		SensorValue[sMobile1] = 1;
+		SensorValue[sMobile2] = 1;
+	}
+	else if(mobileState == 1){
+		waitUntil(vexRT[Btn8R] == 0);
+		mobileState = false;
+		SensorValue[sMobile1] = 0;
+		SensorValue[sMobile2] = 0;
+	}
 }
 
 void Control() {
