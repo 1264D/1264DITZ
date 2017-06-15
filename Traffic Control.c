@@ -4,6 +4,7 @@
 #pragma config(Sensor, dgtl2,  sMobile2,       sensorDigitalOut)
 #pragma config(Sensor, dgtl3,  sLeftDrive,     sensorQuadEncoder)
 #pragma config(Sensor, dgtl5,  sRightDrive,    sensorQuadEncoder)
+#pragma config(Sensor, dgtl12, sDriveDirection, sensorTouch)
 #pragma config(Motor,  port1,           Chainbar,      tmotorVex393_HBridge, openLoop)
 #pragma config(Motor,  port2,           FrontRight,    tmotorVex393_MC29, openLoop, reversed)
 #pragma config(Motor,  port3,           FrontLeft,     tmotorVex393_MC29, openLoop)
@@ -40,6 +41,7 @@ int RightJoySH; //Partner Right X
 string batteryMain; //String for lcd
 string batteryPowerExpander; //String for lcd
 bool mobileState = false;
+int driveDirection = 1;
 
 
 int JoyClear(int origVal) { //intake current joystick position
@@ -88,8 +90,8 @@ void Variables(){
 }
 
 void Base(){
-	lDrive(LeftJoyMV);
-	rDrive(RightJoyMV);
+	lDrive(LeftJoyMV*driveDirection);
+	rDrive(RightJoyMV*driveDirection);
 }
 
 void Lift(){
@@ -144,6 +146,12 @@ task usercontrol(){
 	motor[port8] = 0;
 	motor[port9] = 0;
 	motor[port10] = 0;
+	if(SensorValue[sDriveDirection] == 1) {
+		driveDirection = -1;
+	}
+	else if(SensorValue[sDriveDirection] == 0) {
+		driveDirection = 1;
+}
 	while (true){
 		Variables();
 		Control();
