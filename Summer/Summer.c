@@ -26,10 +26,6 @@
 //Main competition background code...do not modify!
 #include "Vex_Competition_Includes.c"
 
-#include "Autonomous.c"
-
-int autonMoveL; //Reset variable for autonomous left wheel
-int autonMoveR; // reset wheel for autonomous right wheel
 int RightJoyMV; //Main Right Y
 int RightJoySV; //Partner Right Y
 int LeftJoyMV;  //Main Left Y
@@ -132,7 +128,13 @@ void pre_auton(){
 }
 
 task autonomous(){
-	AutonomousCodePlaceholderForTesting();
+	while(SensorValue[sLeftDrive] < 200){
+	motor[port1] = 127;
+	}
+	SensorValue[sLeftDrive] = 0;
+	while(SensorValue[sLeftDrive] > -200){
+ 	motor[port2] = -127;
+	}
 }
 
 task usercontrol(){
