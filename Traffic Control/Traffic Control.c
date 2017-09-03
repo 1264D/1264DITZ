@@ -1,4 +1,4 @@
-#pragma config(Sensor, in1,    pLLift,         sensorPotentiometer)
+#pragma config(Sensor, in1,    pLift,         sensorPotentiometer)
 #pragma config(Sensor, in2,    gLift,          sensorGyro)
 #pragma config(Sensor, in3,    pChainbar,      sensorPotentiometer)
 #pragma config(Sensor, in4,    pClaw,          sensorPotentiometer)
@@ -9,8 +9,8 @@
 #pragma config(Sensor, dgtl1,  qLeftDrive,     sensorQuadEncoder)
 #pragma config(Sensor, dgtl3,  qRightDrive,    sensorQuadEncoder)
 #pragma config(Sensor, dgtl5,  tLiftDown,      sensorTouch)
-#pragma config(Sensor, dgtl6,  tMobileOut,     sensorTouch)
-#pragma config(Sensor, dgtl7,  tMobileIn,      sensorTouch)
+#pragma config(Sensor, dgtl6,  tMobileDown,     sensorTouch)
+#pragma config(Sensor, dgtl7,  tMobileUp,      sensorTouch)
 #pragma config(Sensor, dgtl8,  tMobileLoaded,  sensorTouch)
 #pragma config(Motor,  port1,           mChainbar,     tmotorVex393_HBridge, openLoop)
 #pragma config(Motor,  port2,           mFrontRight,   tmotorVex393_MC29, openLoop, reversed)
@@ -33,8 +33,6 @@
 //Main competition background code...do not modify!
 #include "Vex_Competition_Includes.c"
 
-#include "Autonomous.c"
-
 int RightJoyMV; //Main Right Y
 int RightJoySV; //Partner Right Y
 int LeftJoyMV;  //Main Left Y
@@ -43,6 +41,12 @@ int LeftJoyMH; //Main Left X
 int LeftJoySH; //Partner Left X
 int RightJoyMH; //Main Right X
 int RightJoySH; //Partner Right X
+int coneStack;
+int liftHeight;
+int chainAngle;
+int clawAngle;
+int clawOpen;
+int clawClose;
 string batteryMain; //String for lcd
 string batteryPowerExpander; //String for lcd
 
@@ -102,16 +106,98 @@ void Lift(){
 	motor[mLiftRight] = PowerCap(vexRT[Btn6U]*127 + vexRT[Btn6D]*-127);
 }
 
+void Mobile(){
+	if(SensorValue[tMobileDown] == 1){
+		motor[mMobileLeft] = PowerCap(vexRT[Btn5U]*127);
+		motor[mMobileRight] = PowerCap(vexRT[Btn5U]*127);
+	}
+	else if(SensorValue[tMobileUp] == 1){
+		motor[mMobileLeft] = PowerCap(vexRT[Btn5D]*-127);
+		motor[mMobileRight] = PowerCap(vexRT[Btn5D]*-127);
+	}
+	else{
+		motor[mMobileLeft] = PowerCap(vexRT[Btn5U]*127 + vexRT[Btn5D]*-127);
+		motor[mMobileRight] = PowerCap(vexRT[Btn5U]*127 + vexRT[Btn5D]*-127);
+	}
+}
+
+void stack(){
+	coneStack++;
+	switch(coneStack){
+	case 1:liftHeight = 0; chainAngle = 0;
+	case 2:liftHeight = 0; chainAngle = 0;
+	case 3:liftHeight = 0; chainAngle = 0;
+	case 4:liftHeight = 0; chainAngle = 0;
+	case 5:liftHeight = 0; chainAngle = 0;
+	case 6:liftHeight = 0; chainAngle = 0;
+	case 7:liftHeight = 0; chainAngle = 0;
+	case 8:liftHeight = 0; chainAngle = 0;
+	case 9:liftHeight = 0; chainAngle = 0;
+	case 10:liftHeight = 0; chainAngle = 0;
+	case 11:liftHeight = 0; chainAngle = 0;
+	case 12:liftHeight = 0; chainAngle = 0;
+	case 13:liftHeight = 0; chainAngle = 0;
+	case 14:liftHeight = 0; chainAngle = 0;
+	case 15:liftHeight = 0; chainAngle = 0;
+	}
+}
+
+void stackDriver(){
+	stack();
+	while(SensorValue[gLift] < liftHeight && SensorValue[pChainbar] < chainAngle){
+		Base();
+		if(SensorValue[gLift] < liftHeight){
+			motor[mLiftLeft] = 127;
+			motor[mLiftRight] = 127;
+		}
+		else{
+			motor[mLiftLeft] = 0;
+			motor[mLiftRight] = 0;
+		}
+
+		if(SensorValue[pChainbar] < chainAngle){
+			motor[mChainbar] = 127;
+		}
+		else{
+			motor[mChainbar] = 0;
+		}
+	}
+	while(clawAngle < clawOpen){
+		Base();
+		motor[mClaw] = 127;
+	}
+	while(SensorValue[tLiftDown] != 1 && SensorValue[pChainbar] > 0){
+		if(SensorValue[tLiftDown] != 1){
+			Base();
+			motor[mLiftLeft] = -127;
+			motor[mLiftRight] = -127;
+		}
+		else{
+			motor[mLiftLeft] = 0;
+			motor[mLiftRight] = 0;
+		}
+		if(SensorValue[pChainbar] > 0){
+			motor[mChainbar] = 127;
+		}
+		else{
+			motor[mChainbar] = 0;
+		}
+	}
+}
+
 void Cone(){
 	motor[mClaw] = PowerCap(vexRT[Btn7U]*127 + vexRT[Btn7D]*-127);
 	motor[mChainbar] = PowerCap(vexRT[Btn5U]*127 + vexRT[Btn5D]*-127);
 }
 
 void Control() {
+	Mobile();
 	Base();
 	Lift();
 	Cone();
 }
+
+#include "Autonomous.c"
 
 void pre_auton()
 {
