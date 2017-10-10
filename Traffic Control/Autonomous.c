@@ -1,6 +1,7 @@
 int moveDir;
 int liftDir;
 int turnDir;
+int turnAngle;
 
 
 void Auton1(){
@@ -101,10 +102,37 @@ void turn1(int angle){
 			rDrive(50*-turnDir);
 		}
 	}
+	rDrive(0);
+	lDrive(0);
 }
 
-void turn2(int angle){
-
+void turn2(int dis){
+	turnAngle = dis;
+ if(dis < 0){
+		moveDir = -1;
+	}
+	else{
+		moveDir = 1;
+	}
+	while((dis < 0 && SensorValue[qLeftDrive] > dis && SensorValue[qRightDrive] > dis) || (dis > 0 && SensorValue[qLeftDrive] < dis && SensorValue[qRightDrive] < dis)){
+		lDrive(127*moveDir);
+		rDrive(127*moveDir);
+	}
+	wait1Msec(250);
+	if(SensorValue[gBase] != turnAngle){
+		if(abs(SensorValue[gBase]) < abs(turnAngle)){
+			turnDir = turnDir;
+		}
+		else{
+			turnDir = -turnDir;
+		}
+		while((turnAngle < 0 && SensorValue[gBase] < turnAngle) || (turnAngle > 0 && SensorValue[gBase] > turnAngle)){
+			lDrive(50*turnDir);
+			rDrive(50*-turnDir);
+		}
+	}
+	lDrive(0);
+	rDrive(0);
 }
 void dr4b(int angle, int pwr){
 	if(angle < 0){
@@ -117,7 +145,8 @@ void dr4b(int angle, int pwr){
 		motor[mLiftLeft] = pwr*liftDir;
 		motor[mLiftRight] = pwr*liftDir;
 	}
-
+	motor[mLiftLeft] = 0;
+	motor[mLiftRight] = 0;
 }
 void reset(string sensor){
 	if(sensor == "gLift"){

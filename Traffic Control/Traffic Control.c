@@ -1,4 +1,4 @@
-#pragma config(Sensor, in1,    pLift,         sensorPotentiometer)
+#pragma config(Sensor, in1,    pLift,          sensorPotentiometer)
 #pragma config(Sensor, in2,    gLift,          sensorGyro)
 #pragma config(Sensor, in3,    pChainbar,      sensorPotentiometer)
 #pragma config(Sensor, in4,    pClaw,          sensorPotentiometer)
@@ -9,7 +9,7 @@
 #pragma config(Sensor, dgtl1,  qLeftDrive,     sensorQuadEncoder)
 #pragma config(Sensor, dgtl3,  qRightDrive,    sensorQuadEncoder)
 #pragma config(Sensor, dgtl5,  tLiftDown,      sensorTouch)
-#pragma config(Sensor, dgtl6,  tMobileDown,     sensorTouch)
+#pragma config(Sensor, dgtl6,  tMobileDown,    sensorTouch)
 #pragma config(Sensor, dgtl7,  tMobileUp,      sensorTouch)
 #pragma config(Sensor, dgtl8,  tMobileLoaded,  sensorTouch)
 #pragma config(Motor,  port1,           mChainbar,     tmotorVex393_HBridge, openLoop)
@@ -17,7 +17,7 @@
 #pragma config(Motor,  port3,           mFrontLeft,    tmotorVex393_MC29, openLoop)
 #pragma config(Motor,  port4,           mLiftRight,    tmotorVex393_MC29, openLoop, reversed)
 #pragma config(Motor,  port5,           mMobileLeft,   tmotorVex393_MC29, openLoop, reversed)
-#pragma config(Motor,  port6,           mMobileRight,  tmotorVex393_MC29, openLoop)
+#pragma config(Motor,  port6,           mMobileRight,  tmotorVex393_MC29, openLoop, reversed)
 #pragma config(Motor,  port7,           mLiftLeft,     tmotorVex393_MC29, openLoop)
 #pragma config(Motor,  port8,           mBackLeft,     tmotorVex393_MC29, openLoop)
 #pragma config(Motor,  port9,           mBackRight,    tmotorVex393_MC29, openLoop, reversed)
@@ -41,12 +41,12 @@ int LeftJoyMH; //Main Left X
 int LeftJoySH; //Partner Left X
 int RightJoyMH; //Main Right X
 int RightJoySH; //Partner Right X
-int coneStack;
-int liftHeight;
-int chainAngle;
-int clawAngle;
-int clawOpen;
-int clawClose;
+int coneStack; //How many cones are currently in the stack
+int liftHeight; //Requested angle for lift
+int chainAngle; //Requested angle for chainbar
+int clawAngle; //Requested angle for claw
+int clawOpen; //Potentiometer value of when the claw is open
+int clawClose; //Potentiometer Value if when the claw is closed
 string batteryMain; //String for lcd
 string batteryPowerExpander; //String for lcd
 
@@ -86,44 +86,50 @@ void Variables(){
 	//Configure joysticks for deidling
 }
 
-void lDrive(int pwr){
+void lDrive(int pwr){//intake power
 	motor[mBackLeft] = pwr;
 	motor[mFrontLeft] = pwr;
+	//Set left motors to a certain power
 }
 
-void rDrive(int pwr){
+void rDrive(int pwr){//intake power
 	motor[mBackRight] = pwr;
 	motor[mFrontRight] = pwr;
+	//Set right motors to a certain power
 }
 
-void Base(){
-	lDrive(LeftJoyMV);
-	rDrive(RightJoyMV);
+void Base(){//Configure base control joysticks
+	lDrive(LeftJoyMV);//Left wheels are controlled by left joystick
+	rDrive(RightJoyMV);//Right wheels are controlled by right joystick
 }
 
-void Lift(){
+void Lift(){//configure lift control
 	motor[mLiftLeft] = PowerCap(vexRT[Btn6U]*127 + vexRT[Btn6D]*-127);
 	motor[mLiftRight] = PowerCap(vexRT[Btn6U]*127 + vexRT[Btn6D]*-127);
+	//lift is controlled by right bumpers
 }
 
-void Mobile(){
-	if(SensorValue[tMobileDown] == 1){
+void Mobile(){//configure mobile goal intake control
+	if(SensorValue[tMobileDown] == 1){//if intake is down, only let the motors go up
 		motor[mMobileLeft] = PowerCap(vexRT[Btn5U]*127);
 		motor[mMobileRight] = PowerCap(vexRT[Btn5U]*127);
+		if(coneStack != 0){//zero the stack
+			coneStack = 0;
+		}
 	}
-	else if(SensorValue[tMobileUp] == 1){
+	else if(SensorValue[tMobileUp] == 1){//if intake is up, only let the motors go down
 		motor[mMobileLeft] = PowerCap(vexRT[Btn5D]*-127);
 		motor[mMobileRight] = PowerCap(vexRT[Btn5D]*-127);
 	}
-	else{
+	else{//if it is inbetween, controllable both directions
 		motor[mMobileLeft] = PowerCap(vexRT[Btn5U]*127 + vexRT[Btn5D]*-127);
 		motor[mMobileRight] = PowerCap(vexRT[Btn5U]*127 + vexRT[Btn5D]*-127);
 	}
 }
 
-void stack(){
-	coneStack++;
-	switch(coneStack){
+void stack(){//configure lift and chainbar angles based on how many cones are on the stack
+	coneStack++;// add one to stack
+	switch(coneStack){//How many cones are currently on the stack
 	case 1:liftHeight = 0; chainAngle = 0;
 	case 2:liftHeight = 0; chainAngle = 0;
 	case 3:liftHeight = 0; chainAngle = 0;
@@ -142,11 +148,11 @@ void stack(){
 	}
 }
 
-void stackDriver(){
-	stack();
-	while(SensorValue[gLift] < liftHeight && SensorValue[pChainbar] < chainAngle){
+void stackDriver(){//automated cone stacking
+	stack();//configure stack variables
+	while(SensorValue[gLift] < liftHeight && SensorValue[pChainbar] < chainAngle){ //move until the lift and chainbar are not at final positions
 		Base();
-		if(SensorValue[gLift] < liftHeight){
+		if(SensorValue[gLift] < liftHeight){//while lift is not at final position, move it
 			motor[mLiftLeft] = 127;
 			motor[mLiftRight] = 127;
 		}
@@ -155,18 +161,18 @@ void stackDriver(){
 			motor[mLiftRight] = 0;
 		}
 
-		if(SensorValue[pChainbar] < chainAngle){
+		if(SensorValue[pChainbar] < chainAngle){//while chainbar is not at final position, move it
 			motor[mChainbar] = 127;
 		}
 		else{
 			motor[mChainbar] = 0;
 		}
 	}
-	while(clawAngle < clawOpen){
+	while(clawAngle < clawOpen){//open the claw/release the cone
 		Base();
 		motor[mClaw] = 127;
 	}
-	while(SensorValue[tLiftDown] != 1 && SensorValue[pChainbar] > 0){
+	while(SensorValue[tLiftDown] != 1 && SensorValue[pChainbar] > 0){ // move the lift and chainbar back
 		if(SensorValue[tLiftDown] != 1){
 			Base();
 			motor[mLiftLeft] = -127;
@@ -185,12 +191,12 @@ void stackDriver(){
 	}
 }
 
-void Cone(){
-	motor[mClaw] = PowerCap(vexRT[Btn7U]*127 + vexRT[Btn7D]*-127);
-	motor[mChainbar] = PowerCap(vexRT[Btn5U]*127 + vexRT[Btn5D]*-127);
+void Cone(){//configure claw and chainbar control
+	motor[mClaw] = PowerCap(vexRT[Btn7U]*127 + vexRT[Btn7D]*-127);//claw motion is controlled via right d-pad
+	motor[mChainbar] = PowerCap(vexRT[Btn5U]*127 + vexRT[Btn5D]*-127);//chainbar is controlled by left bumpers
 }
 
-void Control() {
+void Control() {//consolidate control
 	Mobile();
 	Base();
 	Lift();
@@ -199,8 +205,7 @@ void Control() {
 
 #include "Autonomous.c"
 
-void pre_auton()
-{
+void pre_auton(){
 	bStopTasksBetweenModes = true;
 }
 
@@ -215,8 +220,9 @@ task usercontrol(){
 	motor[port8] = 0;
 	motor[port9] = 0;
 	motor[port10] = 0;
-	while (true){
-		Variables();
-		Control();
+	//reset motors
+	while(true){
+		Variables(); //configure variables
+		Control();//set control
 	}
 }
