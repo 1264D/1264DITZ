@@ -112,22 +112,22 @@ void Lift(){//configure lift control
 void Mobile(){//configure mobile goal intake control
 	/*
 	if(SensorValue[tMobileDown] == 1){//if intake is down, only let the motors go up
-		motor[mMobileLeft] = PowerCap(vexRT[Btn5U]*127);
-		motor[mMobileRight] = PowerCap(vexRT[Btn5U]*127);
-		if(coneStack != 0){//zero the stack
-			coneStack = 0;
-		}
+	motor[mMobileLeft] = PowerCap(vexRT[Btn5U]*127);
+	motor[mMobileRight] = PowerCap(vexRT[Btn5U]*127);
+	if(coneStack != 0){//zero the stack
+	coneStack = 0;
+	}
 	}
 	else if(SensorValue[tMobileUp] == 1){//if intake is up, only let the motors go down
-		motor[mMobileLeft] = PowerCap(vexRT[Btn5D]*-127);
-		motor[mMobileRight] = PowerCap(vexRT[Btn5D]*-127);
+	motor[mMobileLeft] = PowerCap(vexRT[Btn5D]*-127);
+	motor[mMobileRight] = PowerCap(vexRT[Btn5D]*-127);
 	}
 	else{//if it is inbetween, controllable both directions
-		motor[mMobileLeft] = PowerCap(vexRT[Btn5U]*127 + vexRT[Btn5D]*-127);
-		motor[mMobileRight] = PowerCap(vexRT[Btn5U]*127 + vexRT[Btn5D]*-127);
+	motor[mMobileLeft] = PowerCap(vexRT[Btn5U]*127 + vexRT[Btn5D]*-127);
+	motor[mMobileRight] = PowerCap(vexRT[Btn5U]*127 + vexRT[Btn5D]*-127);
 	} */
 	motor[mMobileLeft] = PowerCap(vexRT[Btn6D]*127 + vexRT[Btn5D]*-50);
-		motor[mMobileRight] = PowerCap(vexRT[Btn6D]*127 + vexRT[Btn5D]*-50);
+	motor[mMobileRight] = PowerCap(vexRT[Btn6D]*127 + vexRT[Btn5D]*-50);
 }
 
 void stack(){//configure lift and chainbar angles based on how many cones are on the stack
@@ -195,8 +195,8 @@ void stackDriver(){//automated cone stacking
 }
 
 void Cone(){//configure claw and chainbar control
-	motor[mClaw] = PowerCap(vexRT[Btn7L]*127 + vexRT[Btn7D]*-127);//claw motion is controlled via right d-pad
-	motor[mChainbar] = PowerCap(vexRT[Btn8D]*127 + vexRT[Btn8R]*-127);//chainbar is controlled by left bumpers
+	motor[mClaw] = PowerCap(vexRT[Btn5UXmtr2]*127 + vexRT[Btn6UXmtr2]*-127);//claw motion is controlled via right d-pad
+	motor[mChainbar] = PowerCap(vexRT[Btn5DXmtr2]*127 + vexRT[Btn6DXmtr2]*-127);//chainbar is controlled by left bumpers
 }
 
 void Control() {//consolidate control

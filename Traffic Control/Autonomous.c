@@ -3,12 +3,6 @@ int liftDir;
 int turnDir;
 int turnAngle;
 
-
-void Auton1(){
-
-
-}
-
 void stackAuton(int lift, int chain){
 	stack();
 	while(SensorValue[gLift] < liftHeight && SensorValue[pChainbar] < chainAngle){
@@ -17,6 +11,7 @@ void stackAuton(int lift, int chain){
 			motor[mLiftRight] = lift;
 		}
 		else{
+
 			motor[mLiftLeft] = 0;
 			motor[mLiftRight] = 0;
 		}
@@ -49,7 +44,7 @@ void stackAuton(int lift, int chain){
 	}
 }
 
-void mobile(string pos, int pwr){
+void mobile(int pwr){
 	if(SensorValue[tMobileUp] == 1){
 		while(SensorValue[tMobileDown] != 0){
 			motor[mMobileLeft] = -pwr;
@@ -108,7 +103,7 @@ void turn1(int angle){
 
 void turn2(int dis){
 	turnAngle = dis;
- if(dis < 0){
+	if(dis < 0){
 		moveDir = -1;
 	}
 	else{
@@ -194,6 +189,50 @@ void drive(int dis, int pwr){
 	rDrive(0);
 }
 
+void Auton1(){
+	motor[mLiftLeft] = 127;
+	motor[mLiftRight] = 127;
+	wait1Msec(500);
+	motor[mLiftLeft] = 0;
+	motor[mLiftRight] = 0;
+	mobile(75);
+	drive(0, 127);
+	mobile(127);
+	while(SensorValue[qRightDrive] > 0){
+		lDrive(127);
+		rDrive(-127);
+	}
+	lDrive(0);
+	rDrive(0);
+	drive(0,127);
+	motor[mMobileLeft] = -55;
+	motor[mMobileRight] =-55;
+	wait1Msec(500);
+	motor[mMobileLeft] = 0;
+	motor[mMobileRight] = 0;
+	drive(-0,127);
+}
+
+void Auton2(){
+	motor[mClaw] = -127;
+	wait1Msec(250);
+	motor[mChainbar] = -127;
+	wait1Msec(4000);
+	motor[mClaw] = 0;
+	motor[mChainbar] = 0;
+	motor[mLiftLeft] = 127;
+	motor[mLiftRight] = 127;
+	wait1Msec(400);
+	motor[mLiftLeft] = 0;
+	motor[mLiftRight] = 0;
+	mobile(65);
+	lDrive(127);
+	rDrive(127);
+	wait1Msec(3000);
+	lDrive(0);
+	rDrive(0);
+}
+
 task autonomous(){
-	AutonomousCodePlaceholderForTesting();
+	Auton2();
 }
