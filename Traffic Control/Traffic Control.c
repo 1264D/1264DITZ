@@ -33,6 +33,7 @@
 //Main competition background code...do not modify!
 #include "Vex_Competition_Includes.c"
 
+
 int RightJoyMV; //Main Right Y
 int RightJoySV; //Partner Right Y
 int LeftJoyMV;  //Main Left Y
@@ -104,8 +105,8 @@ void Base(){//Configure base control joysticks
 }
 
 void Lift(){//configure lift control
-	motor[mLiftLeft] = PowerCap(vexRT[Btn6U]*127 + vexRT[Btn5U]*-127);
-	motor[mLiftRight] = PowerCap(vexRT[Btn6U]*127 + vexRT[Btn5U]*-127);
+	motor[mLiftLeft] = PowerCap(LeftJoySV);
+	motor[mLiftRight] = PowerCap(LeftJoySV);
 	//lift is controlled by right bumpers
 }
 
@@ -196,7 +197,7 @@ void stackDriver(){//automated cone stacking
 
 void Cone(){//configure claw and chainbar control
 	motor[mClaw] = PowerCap(vexRT[Btn5UXmtr2]*127 + vexRT[Btn6UXmtr2]*-127);//claw motion is controlled via right d-pad
-	motor[mChainbar] = PowerCap(vexRT[Btn5DXmtr2]*127 + vexRT[Btn6DXmtr2]*-127);//chainbar is controlled by left bumpers
+//	motor[mChainbar] = PowerCap(vexRT[Btn5DXmtr2]*127 + vexRT[Btn6DXmtr2]*-127);//chainbar is controlled by left bumpers
 }
 
 void Control() {//consolidate control

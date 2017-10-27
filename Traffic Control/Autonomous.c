@@ -136,12 +136,10 @@ void dr4b(int angle, int pwr){
 	else{
 		liftDir = 1;
 	}
-	while((angle > 0 && SensorValue[gLift] > angle) || (angle < 0 && SensorValue[gLift] < angle)){
+	while((angle > 0 && SensorValue[pLift] < angle) || (angle < 0 && SensorValue[pLift] > angle)){
 		motor[mLiftLeft] = pwr*liftDir;
 		motor[mLiftRight] = pwr*liftDir;
 	}
-	motor[mLiftLeft] = 0;
-	motor[mLiftRight] = 0;
 }
 void reset(string sensor){
 	if(sensor == "gLift"){
@@ -187,52 +185,46 @@ void drive(int dis, int pwr){
 	}
 	lDrive(0);
 	rDrive(0);
+	SensorValue[qLeftDrive] = 0;
+	SensorValue[qRightDrive] = 0;
 }
 
-void Auton1(){
-	motor[mLiftLeft] = 127;
-	motor[mLiftRight] = 127;
-	wait1Msec(500);
-	motor[mLiftLeft] = 0;
-	motor[mLiftRight] = 0;
-	mobile(75);
-	drive(0, 127);
-	mobile(127);
-	while(SensorValue[qRightDrive] > 0){
-		lDrive(127);
-		rDrive(-127);
-	}
-	lDrive(0);
-	rDrive(0);
-	drive(0,127);
-	motor[mMobileLeft] = -55;
-	motor[mMobileRight] =-55;
-	wait1Msec(500);
-	motor[mMobileLeft] = 0;
-	motor[mMobileRight] = 0;
-	drive(-0,127);
-}
+void Auton1(){ //mogo auton
 
-void Auton2(){
-	motor[mClaw] = -127;
+	drive(-225,80);
 	wait1Msec(250);
-	motor[mChainbar] = -127;
-	wait1Msec(4000);
-	motor[mClaw] = 0;
-	motor[mChainbar] = 0;
+	dr4b(4090,127);
 	motor[mLiftLeft] = 127;
 	motor[mLiftRight] = 127;
-	wait1Msec(400);
+	motor[mClaw] = 70;
+	wait1Msec(500);
+	motor[mClaw] = -70;
+	wait1Msec(500);
+	motor[mClaw] = 0;
 	motor[mLiftLeft] = 0;
 	motor[mLiftRight] = 0;
-	mobile(65);
-	lDrive(127);
-	rDrive(127);
-	wait1Msec(3000);
-	lDrive(0);
-	rDrive(0);
+
+	//Lift Up
+	//Lower mobile
+	// drive forward
+	//inkate mogo
+	//turn around
+	//drive forward
+	//dump mobile
+	//back up
+}
+
+void Auton2(){ //stationary auton
+	drive(-0, 127);
+	dr4b(0,127);
+	drive(0,127);
+
 }
 
 task autonomous(){
-	Auton2();
+	SensorValue[qLeftDrive] = 0;
+	SensorValue[qRightDrive] = 0;
+	SensorValue[gBase] = 0;
+	SensorValue[gLift] = 0;
+	Auton1();
 }
