@@ -1,6 +1,6 @@
 #pragma config(Sensor, in1,    pLift,          sensorPotentiometer)
 #pragma config(Sensor, in2,    gLift,          sensorGyro)
-#pragma config(Sensor, in3,    pChainbar,      sensorPotentiometer)
+#pragma config(Sensor, in3,    lMobile,        sensorLineFollower)
 #pragma config(Sensor, in4,    pClaw,          sensorPotentiometer)
 #pragma config(Sensor, in5,    gBase,          sensorGyro)
 #pragma config(Sensor, in6,    lLeft,          sensorLineFollower)
@@ -11,8 +11,7 @@
 #pragma config(Sensor, dgtl5,  tLiftDown,      sensorTouch)
 #pragma config(Sensor, dgtl6,  tMobileDown,    sensorTouch)
 #pragma config(Sensor, dgtl7,  tMobileUp,      sensorTouch)
-#pragma config(Sensor, dgtl8,  tMobileLoaded,  sensorTouch)
-#pragma config(Sensor, dgtl12, jAuton,          sensorTouch)
+#pragma config(Sensor, dgtl12, jAuton,         sensorTouch)
 #pragma config(Motor,  port1,           mMobileLeft,   tmotorVex393_HBridge, openLoop, reversed)
 #pragma config(Motor,  port2,           mFrontRight,   tmotorVex393_MC29, openLoop, reversed)
 #pragma config(Motor,  port3,           mFrontLeft,    tmotorVex393_MC29, openLoop)
@@ -128,8 +127,8 @@ void Mobile(){//configure mobile goal intake control
 	motor[mMobileLeft] = PowerCap(vexRT[Btn5U]*127 + vexRT[Btn5D]*-127);
 	motor[mMobileRight] = PowerCap(vexRT[Btn5U]*127 + vexRT[Btn5D]*-127);
 	} */
-	motor[mMobileLeft] = PowerCap(vexRT[Btn6D]*127 + vexRT[Btn5D]*-50);
-	motor[mMobileRight] = PowerCap(vexRT[Btn6D]*127 + vexRT[Btn5D]*-50);
+	motor[mMobileLeft] = PowerCap(vexRT[Btn6D]*127 + vexRT[Btn5D]*-70);
+	motor[mMobileRight] = PowerCap(vexRT[Btn6D]*127 + vexRT[Btn5D]*-70);
 }
 
 void stack(){//configure lift and chainbar angles based on how many cones are on the stack
@@ -153,7 +152,7 @@ void stack(){//configure lift and chainbar angles based on how many cones are on
 	}
 }
 
-void stackDriver(){//automated cone stacking
+/*void stackDriver(){//automated cone stacking
 	stack();//configure stack variables
 	while(SensorValue[gLift] < liftHeight && SensorValue[pChainbar] < chainAngle){ //move until the lift and chainbar are not at final positions
 		Base();
@@ -194,7 +193,7 @@ void stackDriver(){//automated cone stacking
 			motor[mChainbar] = 0;
 		}
 	}
-}
+} */
 
 void Cone(){//configure claw and chainbar control
 	motor[mClaw] = PowerCap(vexRT[Btn5UXmtr2]*127 + vexRT[Btn6UXmtr2]*-127);//claw motion is controlled via right d-pad
@@ -225,6 +224,8 @@ task usercontrol(){
 	motor[port8] = 0;
 	motor[port9] = 0;
 	motor[port10] = 0;
+	SensorValue[qLeftDrive] = 0;
+	SensorValue[qLeftDrive] = 0;
 	//reset motors
 	while(true){
 		Variables(); //configure variables

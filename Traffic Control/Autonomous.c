@@ -3,46 +3,46 @@ int liftDir;
 int turnDir;
 int turnAngle;
 
-void stackAuton(int lift, int chain){
-	stack();
-	while(SensorValue[gLift] < liftHeight && SensorValue[pChainbar] < chainAngle){
-		if(SensorValue[gLift] < liftHeight){
-			motor[mLiftLeft] = lift;
-			motor[mLiftRight] = lift;
-		}
-		else{
-
-			motor[mLiftLeft] = 0;
-			motor[mLiftRight] = 0;
-		}
-
-		if(SensorValue[pChainbar] < chainAngle){
-			motor[mChainbar] = chain;
-		}
-		else{
-			motor[mChainbar] = 0;
-		}
-	}
-	while(clawAngle < clawOpen){
-		motor[mClaw] = 127;
-	}
-	while(SensorValue[tLiftDown] != 1 && SensorValue[pChainbar] > 0){
-		if(SensorValue[tLiftDown] != 1){
-			motor[mLiftLeft] = -lift;
-			motor[mLiftRight] = -lift;
-		}
-		else{
-			motor[mLiftLeft] = 0;
-			motor[mLiftRight] = 0;
-		}
-		if(SensorValue[pChainbar] > 0){
-			motor[mChainbar] = chain;
-		}
-		else{
-			motor[mChainbar] = 0;
-		}
-	}
+/*void stackAuton(int lift, int chain){
+stack();
+while(SensorValue[gLift] < liftHeight && SensorValue[pChainbar] < chainAngle){
+if(SensorValue[gLift] < liftHeight){
+motor[mLiftLeft] = lift;
+motor[mLiftRight] = lift;
 }
+else{
+
+motor[mLiftLeft] = 0;
+motor[mLiftRight] = 0;
+}
+
+if(SensorValue[pChainbar] < chainAngle){
+motor[mChainbar] = chain;
+}
+else{
+motor[mChainbar] = 0;
+}
+}
+while(clawAngle < clawOpen){
+motor[mClaw] = 127;
+}
+while(SensorValue[tLiftDown] != 1 && SensorValue[pChainbar] > 0){
+if(SensorValue[tLiftDown] != 1){
+motor[mLiftLeft] = -lift;
+motor[mLiftRight] = -lift;
+}
+else{
+motor[mLiftLeft] = 0;
+motor[mLiftRight] = 0;
+}
+if(SensorValue[pChainbar] > 0){
+motor[mChainbar] = chain;
+}
+else{
+motor[mChainbar] = 0;
+}
+}
+} */
 
 void mobile(int pwr){
 	if(SensorValue[tMobileUp] == 1){
@@ -140,6 +140,8 @@ void dr4b(int angle, int pwr){
 		motor[mLiftLeft] = pwr*liftDir;
 		motor[mLiftRight] = pwr*liftDir;
 	}
+	motor[mLiftLeft] = 0;
+	motor[mLiftRight] = 0;
 }
 void reset(string sensor){
 	if(sensor == "gLift"){
@@ -172,21 +174,36 @@ void reset(string sensor){
 	}
 }
 
-void drive(int dis, int pwr){
-	if(dis < 0){
+void drive(int dis, int Lpwr, int Rpwr){
+	if(dis > 0){
 		moveDir = -1;
 	}
 	else{
 		moveDir = 1;
 	}
-	while((dis < 0 && SensorValue[qLeftDrive] > dis && SensorValue[qRightDrive] > dis) || (dis > 0 && SensorValue[qLeftDrive] < dis && SensorValue[qRightDrive] < dis)){
-		lDrive(pwr*moveDir);
-		if(pwr == 127){
-			rDrive(pwr*moveDir-57);
-		}
-		else{
-			rDrive(pwr*moveDir);
-		}
+	while(((dis < 0 && SensorValue[qLeftDrive] >= dis/* && SensorValue[qRightDrive] > dis*/) ||
+		(dis > 0 && SensorValue[qLeftDrive] <= dis /*&& SensorValue[qRightDrive] < dis*/))){
+		lDrive(Lpwr*moveDir);
+		rDrive(Rpwr*moveDir);
+	}
+	lDrive(0);
+	rDrive(0);
+	SensorValue[qLeftDrive] = 0;
+	SensorValue[qRightDrive] = 0;
+}
+
+void driveMobile(int dis, int Lpwr, int Rpwr){
+	if(dis > 0){
+		moveDir = -1;
+	}
+	else{
+		moveDir = 1;
+	}
+	while(((dis < 0 && SensorValue[qLeftDrive] >= dis/* && SensorValue[qRightDrive] > dis*/) ||
+		(dis > 0 && SensorValue[qLeftDrive] <= dis /*&& SensorValue[qRightDrive] < dis*/)) &&
+	(SensorValue[lMobile] >= 2000)){
+		lDrive(Lpwr*moveDir);
+		rDrive(Rpwr*moveDir);
 	}
 	lDrive(0);
 	rDrive(0);
@@ -196,19 +213,20 @@ void drive(int dis, int pwr){
 
 void Auton1(){ //mogo auton
 
-	drive(-225,80);
+	dr4b(2400,127);
+	motor[mMobileLeft] = -100;
+	motor[mMobileRight] = -100;
 	wait1Msec(250);
-	dr4b(4090,127);
-	motor[mClaw] = 70;
-	motor[mLiftLeft] = 127;
-	motor[mLiftRight] = 127;
-	wait1Msec(500);
-	motor[mClaw] = -70;
-	wait1Msec(500);
-	motor[mClaw] = 0;
-	motor[mLiftLeft] = 0;
-	motor[mLiftRight] = 0;
-
+	motor[mMobileLeft] = 0;
+	motor[mMobileRight] = 0;
+	driveMobile(-1500,127,70);
+	while(SensorValue[tMobileUp] == 0){
+	motor[mMobileLeft] = 127;
+	motor[mMobileRight] = 127;
+	}
+	motor[mMobileLeft] = 0;
+	motor[mMobileRight] = 0;
+	drive(1000,127,70);
 	//Lift Up
 	//Lower mobile
 	// drive forward
@@ -220,7 +238,7 @@ void Auton1(){ //mogo auton
 }
 
 void Auton2(){ //stationary auton
-	drive(-225,80);
+	drive(-225,80,80);
 	wait1Msec(250);
 	dr4b(4090,127);
 	motor[mLiftLeft] = 127;
@@ -234,21 +252,15 @@ void Auton2(){ //stationary auton
 	motor[mLiftRight] = 0;
 }
 
-void testAuton(){
-	ldrive(100);
-	rDrive(100);
-}
-
 task autonomous(){
 	SensorValue[qLeftDrive] = 0;
 	SensorValue[qRightDrive] = 0;
 	SensorValue[gBase] = 0;
 	SensorValue[gLift] = 0;
-	/*	if(SensorValue[jAuton] == 0){
-	Auton1();
+	if(SensorValue[jAuton] == 0){
+		Auton1();
 	}
 	else{
-	Auton2();
-	}*/
-	testAuton();
+		Auton2();
+	}
 }
