@@ -12,6 +12,7 @@
 #pragma config(Sensor, dgtl6,  tMobileDown,    sensorTouch)
 #pragma config(Sensor, dgtl7,  tMobileUp,      sensorTouch)
 #pragma config(Sensor, dgtl8,  tMobileLoaded,  sensorTouch)
+#pragma config(Sensor, dgtl12, jAuton,          sensorTouch)
 #pragma config(Motor,  port1,           mMobileLeft,   tmotorVex393_HBridge, openLoop, reversed)
 #pragma config(Motor,  port2,           mFrontRight,   tmotorVex393_MC29, openLoop, reversed)
 #pragma config(Motor,  port3,           mFrontLeft,    tmotorVex393_MC29, openLoop)

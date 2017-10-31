@@ -113,19 +113,19 @@ void turn2(int dis){
 		lDrive(127*moveDir);
 		rDrive(127*moveDir);
 	}
-	wait1Msec(250);
+	/*wait1Msec(250);
 	if(SensorValue[gBase] != turnAngle){
-		if(abs(SensorValue[gBase]) < abs(turnAngle)){
-			turnDir = turnDir;
-		}
-		else{
-			turnDir = -turnDir;
-		}
-		while((turnAngle < 0 && SensorValue[gBase] < turnAngle) || (turnAngle > 0 && SensorValue[gBase] > turnAngle)){
-			lDrive(50*turnDir);
-			rDrive(50*-turnDir);
-		}
+	if(abs(SensorValue[gBase]) < abs(turnAngle)){
+	turnDir = turnDir;
 	}
+	else{
+	turnDir = -turnDir;
+	}
+	while((turnAngle < 0 && SensorValue[gBase] < turnAngle) || (turnAngle > 0 && SensorValue[gBase] > turnAngle)){
+	lDrive(50*turnDir);
+	rDrive(50*-turnDir);
+	}
+	} */
 	lDrive(0);
 	rDrive(0);
 }
@@ -181,7 +181,12 @@ void drive(int dis, int pwr){
 	}
 	while((dis < 0 && SensorValue[qLeftDrive] > dis && SensorValue[qRightDrive] > dis) || (dis > 0 && SensorValue[qLeftDrive] < dis && SensorValue[qRightDrive] < dis)){
 		lDrive(pwr*moveDir);
-		rDrive(pwr*moveDir);
+		if(pwr == 127){
+			rDrive(pwr*moveDir-57);
+		}
+		else{
+			rDrive(pwr*moveDir);
+		}
 	}
 	lDrive(0);
 	rDrive(0);
@@ -194,9 +199,9 @@ void Auton1(){ //mogo auton
 	drive(-225,80);
 	wait1Msec(250);
 	dr4b(4090,127);
+	motor[mClaw] = 70;
 	motor[mLiftLeft] = 127;
 	motor[mLiftRight] = 127;
-	motor[mClaw] = 70;
 	wait1Msec(500);
 	motor[mClaw] = -70;
 	wait1Msec(500);
@@ -215,10 +220,23 @@ void Auton1(){ //mogo auton
 }
 
 void Auton2(){ //stationary auton
-	drive(-0, 127);
-	dr4b(0,127);
-	drive(0,127);
+	drive(-225,80);
+	wait1Msec(250);
+	dr4b(4090,127);
+	motor[mLiftLeft] = 127;
+	motor[mLiftRight] = 127;
+	motor[mClaw] = 70;
+	wait1Msec(500);
+	motor[mClaw] = -70;
+	wait1Msec(500);
+	motor[mClaw] = 0;
+	motor[mLiftLeft] = 0;
+	motor[mLiftRight] = 0;
+}
 
+void testAuton(){
+	ldrive(100);
+	rDrive(100);
 }
 
 task autonomous(){
@@ -226,5 +244,11 @@ task autonomous(){
 	SensorValue[qRightDrive] = 0;
 	SensorValue[gBase] = 0;
 	SensorValue[gLift] = 0;
+	/*	if(SensorValue[jAuton] == 0){
 	Auton1();
+	}
+	else{
+	Auton2();
+	}*/
+	testAuton();
 }
