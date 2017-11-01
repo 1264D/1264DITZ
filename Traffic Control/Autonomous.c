@@ -2,47 +2,7 @@ int moveDir;
 int liftDir;
 int turnDir;
 int turnAngle;
-
-/*void stackAuton(int lift, int chain){
-stack();
-while(SensorValue[gLift] < liftHeight && SensorValue[pChainbar] < chainAngle){
-if(SensorValue[gLift] < liftHeight){
-motor[mLiftLeft] = lift;
-motor[mLiftRight] = lift;
-}
-else{
-
-motor[mLiftLeft] = 0;
-motor[mLiftRight] = 0;
-}
-
-if(SensorValue[pChainbar] < chainAngle){
-motor[mChainbar] = chain;
-}
-else{
-motor[mChainbar] = 0;
-}
-}
-while(clawAngle < clawOpen){
-motor[mClaw] = 127;
-}
-while(SensorValue[tLiftDown] != 1 && SensorValue[pChainbar] > 0){
-if(SensorValue[tLiftDown] != 1){
-motor[mLiftLeft] = -lift;
-motor[mLiftRight] = -lift;
-}
-else{
-motor[mLiftLeft] = 0;
-motor[mLiftRight] = 0;
-}
-if(SensorValue[pChainbar] > 0){
-motor[mChainbar] = chain;
-}
-else{
-motor[mChainbar] = 0;
-}
-}
-} */
+int autonNumber;
 
 void mobile(int pwr){
 	if(SensorValue[tMobileUp] == 1){
@@ -143,7 +103,7 @@ void dr4b(int angle, int pwr){
 	motor[mLiftLeft] = 0;
 	motor[mLiftRight] = 0;
 }
-void reset(string sensor){
+void reseter(string sensor){
 	if(sensor == "gLift"){
 		SensorValue[gLift] = 0;
 	}
@@ -212,7 +172,6 @@ void driveMobile(int dis, int Lpwr, int Rpwr){
 }
 
 void Auton1(){ //mogo auton
-
 	dr4b(2400,127);
 	motor[mMobileLeft] = -100;
 	motor[mMobileRight] = -100;
@@ -221,8 +180,8 @@ void Auton1(){ //mogo auton
 	motor[mMobileRight] = 0;
 	driveMobile(-1500,127,70);
 	while(SensorValue[tMobileUp] == 0){
-	motor[mMobileLeft] = 127;
-	motor[mMobileRight] = 127;
+		motor[mMobileLeft] = 127;
+		motor[mMobileRight] = 127;
 	}
 	motor[mMobileLeft] = 0;
 	motor[mMobileRight] = 0;
@@ -252,15 +211,36 @@ void Auton2(){ //stationary auton
 	motor[mLiftRight] = 0;
 }
 
+void autonSelecter(){
+	if(SensorValue[jAuton1] == true){
+		autonNumber += 1;
+	}
+	if(SensorValue[jAuton2] == true){
+		autonNumber += 2;
+	}
+	if(SensorValue[jAuton3] == true){
+		autonNumber += 4;
+	}
+	if(SensorValue[jAuton4] == true){
+		autonNumber += 8;
+	}
+	switch(autonNumber){
+	case 0: //none
+		break;
+	case 1:
+		Auton1();
+		break;
+	case 2:
+		Auton2();
+	default:
+		break;
+	}
+}
+
 task autonomous(){
 	SensorValue[qLeftDrive] = 0;
 	SensorValue[qRightDrive] = 0;
 	SensorValue[gBase] = 0;
 	SensorValue[gLift] = 0;
-	if(SensorValue[jAuton] == 0){
-		Auton1();
-	}
-	else{
-		Auton2();
-	}
+	autonSelecter();
 }

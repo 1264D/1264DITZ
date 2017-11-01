@@ -11,7 +11,10 @@
 #pragma config(Sensor, dgtl5,  tLiftDown,      sensorTouch)
 #pragma config(Sensor, dgtl6,  tMobileDown,    sensorTouch)
 #pragma config(Sensor, dgtl7,  tMobileUp,      sensorTouch)
-#pragma config(Sensor, dgtl12, jAuton,         sensorTouch)
+#pragma config(Sensor, dgtl9,  jAuton4,        sensorTouch)
+#pragma config(Sensor, dgtl10, jAuton3,        sensorTouch)
+#pragma config(Sensor, dgtl11, jAuton2,        sensorTouch)
+#pragma config(Sensor, dgtl12, jAuton1,        sensorTouch)
 #pragma config(Motor,  port1,           mMobileLeft,   tmotorVex393_HBridge, openLoop, reversed)
 #pragma config(Motor,  port2,           mFrontRight,   tmotorVex393_MC29, openLoop, reversed)
 #pragma config(Motor,  port3,           mFrontLeft,    tmotorVex393_MC29, openLoop)
@@ -111,93 +114,12 @@ void Lift(){//configure lift control
 }
 
 void Mobile(){//configure mobile goal intake control
-	/*
-	if(SensorValue[tMobileDown] == 1){//if intake is down, only let the motors go up
-	motor[mMobileLeft] = PowerCap(vexRT[Btn5U]*127);
-	motor[mMobileRight] = PowerCap(vexRT[Btn5U]*127);
-	if(coneStack != 0){//zero the stack
-	coneStack = 0;
-	}
-	}
-	else if(SensorValue[tMobileUp] == 1){//if intake is up, only let the motors go down
-	motor[mMobileLeft] = PowerCap(vexRT[Btn5D]*-127);
-	motor[mMobileRight] = PowerCap(vexRT[Btn5D]*-127);
-	}
-	else{//if it is inbetween, controllable both directions
-	motor[mMobileLeft] = PowerCap(vexRT[Btn5U]*127 + vexRT[Btn5D]*-127);
-	motor[mMobileRight] = PowerCap(vexRT[Btn5U]*127 + vexRT[Btn5D]*-127);
-	} */
-	motor[mMobileLeft] = PowerCap(vexRT[Btn6D]*127 + vexRT[Btn5D]*-70);
-	motor[mMobileRight] = PowerCap(vexRT[Btn6D]*127 + vexRT[Btn5D]*-70);
+	motor[mMobileLeft] = PowerCap(vexRT[Btn6D]*127 + vexRT[Btn5D]*-70+ vexRT[Btn8R]*-127);
+	motor[mMobileRight] = PowerCap(vexRT[Btn6D]*127 + vexRT[Btn5D]*-70+ vexRT[Btn8R]*-127);
 }
-
-void stack(){//configure lift and chainbar angles based on how many cones are on the stack
-	coneStack++;// add one to stack
-	switch(coneStack){//How many cones are currently on the stack
-	case 1:liftHeight = 0; chainAngle = 0;
-	case 2:liftHeight = 0; chainAngle = 0;
-	case 3:liftHeight = 0; chainAngle = 0;
-	case 4:liftHeight = 0; chainAngle = 0;
-	case 5:liftHeight = 0; chainAngle = 0;
-	case 6:liftHeight = 0; chainAngle = 0;
-	case 7:liftHeight = 0; chainAngle = 0;
-	case 8:liftHeight = 0; chainAngle = 0;
-	case 9:liftHeight = 0; chainAngle = 0;
-	case 10:liftHeight = 0; chainAngle = 0;
-	case 11:liftHeight = 0; chainAngle = 0;
-	case 12:liftHeight = 0; chainAngle = 0;
-	case 13:liftHeight = 0; chainAngle = 0;
-	case 14:liftHeight = 0; chainAngle = 0;
-	case 15:liftHeight = 0; chainAngle = 0;
-	}
-}
-
-/*void stackDriver(){//automated cone stacking
-	stack();//configure stack variables
-	while(SensorValue[gLift] < liftHeight && SensorValue[pChainbar] < chainAngle){ //move until the lift and chainbar are not at final positions
-		Base();
-		if(SensorValue[gLift] < liftHeight){//while lift is not at final position, move it
-			motor[mLiftLeft] = 127;
-			motor[mLiftRight] = 127;
-		}
-		else{
-			motor[mLiftLeft] = 0;
-			motor[mLiftRight] = 0;
-		}
-
-		if(SensorValue[pChainbar] < chainAngle){//while chainbar is not at final position, move it
-			motor[mChainbar] = 127;
-		}
-		else{
-			motor[mChainbar] = 0;
-		}
-	}
-	while(clawAngle < clawOpen){//open the claw/release the cone
-		Base();
-		motor[mClaw] = 127;
-	}
-	while(SensorValue[tLiftDown] != 1 && SensorValue[pChainbar] > 0){ // move the lift and chainbar back
-		if(SensorValue[tLiftDown] != 1){
-			Base();
-			motor[mLiftLeft] = -127;
-			motor[mLiftRight] = -127;
-		}
-		else{
-			motor[mLiftLeft] = 0;
-			motor[mLiftRight] = 0;
-		}
-		if(SensorValue[pChainbar] > 0){
-			motor[mChainbar] = 127;
-		}
-		else{
-			motor[mChainbar] = 0;
-		}
-	}
-} */
 
 void Cone(){//configure claw and chainbar control
 	motor[mClaw] = PowerCap(vexRT[Btn5UXmtr2]*127 + vexRT[Btn6UXmtr2]*-127);//claw motion is controlled via right d-pad
-//	motor[mChainbar] = PowerCap(vexRT[Btn5DXmtr2]*127 + vexRT[Btn6DXmtr2]*-127);//chainbar is controlled by left bumpers
 }
 
 void Control() {//consolidate control
@@ -232,3 +154,126 @@ task usercontrol(){
 		Control();//set control
 	}
 }
+
+/*void stack(){//configure lift and chainbar angles based on how many cones are on the stack
+coneStack++;// add one to stack
+switch(coneStack){//How many cones are currently on the stack
+case 1:liftHeight = 0; chainAngle = 0;
+case 2:liftHeight = 0; chainAngle = 0;
+case 3:liftHeight = 0; chainAngle = 0;
+case 4:liftHeight = 0; chainAngle = 0;
+case 5:liftHeight = 0; chainAngle = 0;
+case 6:liftHeight = 0; chainAngle = 0;
+case 7:liftHeight = 0; chainAngle = 0;
+case 8:liftHeight = 0; chainAngle = 0;
+case 9:liftHeight = 0; chainAngle = 0;
+case 10:liftHeight = 0; chainAngle = 0;
+case 11:liftHeight = 0; chainAngle = 0;
+case 12:liftHeight = 0; chainAngle = 0;
+case 13:liftHeight = 0; chainAngle = 0;
+case 14:liftHeight = 0; chainAngle = 0;
+case 15:liftHeight = 0; chainAngle = 0;
+}
+} */
+
+/*void stackDriver(){//automated cone stacking
+stack();//configure stack variables
+while(SensorValue[gLift] < liftHeight && SensorValue[pChainbar] < chainAngle){ //move until the lift and chainbar are not at final positions
+Base();
+if(SensorValue[gLift] < liftHeight){//while lift is not at final position, move it
+motor[mLiftLeft] = 127;
+motor[mLiftRight] = 127;
+}
+else{
+motor[mLiftLeft] = 0;
+motor[mLiftRight] = 0;
+}
+
+if(SensorValue[pChainbar] < chainAngle){//while chainbar is not at final position, move it
+motor[mChainbar] = 127;
+}
+else{
+motor[mChainbar] = 0;
+}
+}
+while(clawAngle < clawOpen){//open the claw/release the cone
+Base();
+motor[mClaw] = 127;
+}
+while(SensorValue[tLiftDown] != 1 && SensorValue[pChainbar] > 0){ // move the lift and chainbar back
+if(SensorValue[tLiftDown] != 1){
+Base();
+motor[mLiftLeft] = -127;
+motor[mLiftRight] = -127;
+}
+else{
+motor[mLiftLeft] = 0;
+motor[mLiftRight] = 0;
+}
+if(SensorValue[pChainbar] > 0){
+motor[mChainbar] = 127;
+}
+else{
+motor[mChainbar] = 0;
+}
+}
+} */
+
+/*void stackAuton(int lift, int chain){
+stack();
+while(SensorValue[gLift] < liftHeight && SensorValue[pChainbar] < chainAngle){
+if(SensorValue[gLift] < liftHeight){
+motor[mLiftLeft] = lift;
+motor[mLiftRight] = lift;
+}
+else{
+
+motor[mLiftLeft] = 0;
+motor[mLiftRight] = 0;
+}
+
+if(SensorValue[pChainbar] < chainAngle){
+motor[mChainbar] = chain;
+}
+else{
+motor[mChainbar] = 0;
+}
+}
+while(clawAngle < clawOpen){
+motor[mClaw] = 127;
+}
+while(SensorValue[tLiftDown] != 1 && SensorValue[pChainbar] > 0){
+if(SensorValue[tLiftDown] != 1){
+motor[mLiftLeft] = -lift;
+motor[mLiftRight] = -lift;
+}
+else{
+motor[mLiftLeft] = 0;
+motor[mLiftRight] = 0;
+}
+if(SensorValue[pChainbar] > 0){
+motor[mChainbar] = chain;
+}
+else{
+motor[mChainbar] = 0;
+}
+}
+} */
+
+/*void Mobile(){//configure mobile goal intake control
+if(SensorValue[tMobileDown] == 1){//if intake is down, only let the motors go up
+motor[mMobileLeft] = PowerCap(vexRT[Btn5U]*127);
+motor[mMobileRight] = PowerCap(vexRT[Btn5U]*127);
+if(coneStack != 0){//zero the stack
+coneStack = 0;
+}
+}
+else if(SensorValue[tMobileUp] == 1){//if intake is up, only let the motors go down
+motor[mMobileLeft] = PowerCap(vexRT[Btn5D]*-127);
+motor[mMobileRight] = PowerCap(vexRT[Btn5D]*-127);
+}
+else{//if it is inbetween, controllable both directions
+motor[mMobileLeft] = PowerCap(vexRT[Btn5U]*127 + vexRT[Btn5D]*-127);
+motor[mMobileRight] = PowerCap(vexRT[Btn5U]*127 + vexRT[Btn5D]*-127);
+}
+}*/
