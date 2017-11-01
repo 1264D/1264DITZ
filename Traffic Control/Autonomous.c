@@ -63,15 +63,15 @@ void turn1(int angle){
 
 void turn2(int dis){
 	turnAngle = dis;
-	if(dis < 0){
+	if(dis > 0){
 		moveDir = -1;
 	}
 	else{
 		moveDir = 1;
 	}
-	while((dis < 0 && SensorValue[qLeftDrive] > dis && SensorValue[qRightDrive] > dis) || (dis > 0 && SensorValue[qLeftDrive] < dis && SensorValue[qRightDrive] < dis)){
+	while((dis < 0 && SensorValue[qLeftDrive] > dis /*&& SensorValue[qRightDrive] > dis*/) || (dis > 0 && SensorValue[qLeftDrive] < dis /*&& SensorValue[qRightDrive] < dis*/)){
 		lDrive(127*moveDir);
-		rDrive(127*moveDir);
+		rDrive(127*-moveDir);
 	}
 	/*wait1Msec(250);
 	if(SensorValue[gBase] != turnAngle){
@@ -88,6 +88,7 @@ void turn2(int dis){
 	} */
 	lDrive(0);
 	rDrive(0);
+	SensorValue[qLeftDrive] = 0;
 }
 void dr4b(int angle, int pwr){
 	if(angle < 0){
@@ -103,7 +104,7 @@ void dr4b(int angle, int pwr){
 	motor[mLiftLeft] = 0;
 	motor[mLiftRight] = 0;
 }
-void reseter(string sensor){
+/*void reseter(string sensor){
 	if(sensor == "gLift"){
 		SensorValue[gLift] = 0;
 	}
@@ -132,7 +133,7 @@ void reseter(string sensor){
 		SensorValue[gBase] = 0;
 		SensorValue[gLift] = 0;
 	}
-}
+} */
 
 void drive(int dis, int Lpwr, int Rpwr){
 	if(dis > 0){
@@ -226,6 +227,7 @@ void autonSelecter(){
 	}
 	switch(autonNumber){
 	case 0: //none
+		turn2(-1500);
 		break;
 	case 1:
 		Auton1();
@@ -241,6 +243,6 @@ task autonomous(){
 	SensorValue[qLeftDrive] = 0;
 	SensorValue[qRightDrive] = 0;
 	SensorValue[gBase] = 0;
-	SensorValue[gLift] = 0;
+	SensorValue[gMobile] = 0;
 	autonSelecter();
 }

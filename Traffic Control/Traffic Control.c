@@ -1,5 +1,5 @@
 #pragma config(Sensor, in1,    pLift,          sensorPotentiometer)
-#pragma config(Sensor, in2,    gLift,          sensorGyro)
+#pragma config(Sensor, in2,    gMobile,        sensorGyro)
 #pragma config(Sensor, in3,    lMobile,        sensorLineFollower)
 #pragma config(Sensor, in4,    pClaw,          sensorPotentiometer)
 #pragma config(Sensor, in5,    gBase,          sensorGyro)
