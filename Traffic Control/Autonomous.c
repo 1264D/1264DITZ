@@ -3,34 +3,26 @@ int liftDir;
 int turnDir;
 int turnAngle;
 int autonNumber;
+bool mobileOut;
 
 void mobile(int pwr){
-	if(SensorValue[tMobileUp] == 1){
-		while(SensorValue[tMobileDown] != 0){
+	if(mobileOut == false){
+		while(SensorValue[gMobile] > -800){
 			motor[mMobileLeft] = -pwr;
 			motor[mMobileRight] = -pwr;
 		}
-		motor[mMobileLeft] = 0;
-		motor[mMobileRight] = 0;
+		mobileOut = true;
 	}
-	else if(SensorValue[tMobileDown] == 1){
-		while(SensorValue[tMobileUp] != 0){
+	else if(mobileOut == true){
+		while(SensorValue[gMobile] < 700 && SensorValue[tMobileUp] == 0){
 			motor[mMobileLeft] = pwr;
 			motor[mMobileRight] = pwr;
 		}
-		coneStack = 0;
-		motor[mMobileLeft] = 0;
-		motor[mMobileRight] = 0;
+		mobileOut = false;
 	}
-	else{
-		while(SensorValue[tMobileDown] != 0){
-			motor[mMobileLeft] = -pwr;
-			motor[mMobileRight] = -pwr;
-		}
-		coneStack = 0;
-		motor[mMobileLeft] = 0;
-		motor[mMobileRight] = 0;
-	}
+	motor[mMobileLeft] = 0;
+	motor[mMobileRight] = 0;
+	SensorValue[gMobile] = 0;
 }
 
 void turn1(int angle){
@@ -105,34 +97,34 @@ void dr4b(int angle, int pwr){
 	motor[mLiftRight] = 0;
 }
 /*void reseter(string sensor){
-	if(sensor == "gLift"){
-		SensorValue[gLift] = 0;
-	}
-	else if(sensor == "gBase"){
-		SensorValue[gBase] = 0;
-	}
-	else if(sensor == "gyros"){
-		SensorValue[gBase] = 0;
-		SensorValue[gLift] = 0;
-	}
+if(sensor == "gLift"){
+SensorValue[gLift] = 0;
+}
+else if(sensor == "gBase"){
+SensorValue[gBase] = 0;
+}
+else if(sensor == "gyros"){
+SensorValue[gBase] = 0;
+SensorValue[gLift] = 0;
+}
 
-	else if(sensor == "qLeftDrive"){
-		SensorValue[qLeftDrive] = 0;
-	}
-	else if(sensor == "qRightDrive"){
-		SensorValue[qRightDrive] = 0;
-	}
-	else if(sensor == "quadatures"){
-		SensorValue[qLeftDrive] = 0;
-		SensorValue[qRightDrive] = 0;
-	}
+else if(sensor == "qLeftDrive"){
+SensorValue[qLeftDrive] = 0;
+}
+else if(sensor == "qRightDrive"){
+SensorValue[qRightDrive] = 0;
+}
+else if(sensor == "quadatures"){
+SensorValue[qLeftDrive] = 0;
+SensorValue[qRightDrive] = 0;
+}
 
-	else if(sensor == "all"){
-		SensorValue[qLeftDrive] = 0;
-		SensorValue[qRightDrive] = 0;
-		SensorValue[gBase] = 0;
-		SensorValue[gLift] = 0;
-	}
+else if(sensor == "all"){
+SensorValue[qLeftDrive] = 0;
+SensorValue[qRightDrive] = 0;
+SensorValue[gBase] = 0;
+SensorValue[gLift] = 0;
+}
 } */
 
 void drive(int dis, int Lpwr, int Rpwr){
@@ -174,18 +166,9 @@ void driveMobile(int dis, int Lpwr, int Rpwr){
 
 void Auton1(){ //mogo auton
 	dr4b(2400,127);
-	motor[mMobileLeft] = -100;
-	motor[mMobileRight] = -100;
-	wait1Msec(250);
-	motor[mMobileLeft] = 0;
-	motor[mMobileRight] = 0;
+	mobile(100);
 	driveMobile(-1500,127,70);
-	while(SensorValue[tMobileUp] == 0){
-		motor[mMobileLeft] = 127;
-		motor[mMobileRight] = 127;
-	}
-	motor[mMobileLeft] = 0;
-	motor[mMobileRight] = 0;
+	mobile(127);
 	drive(1000,127,70);
 	//Lift Up
 	//Lower mobile
@@ -227,7 +210,6 @@ void autonSelecter(){
 	}
 	switch(autonNumber){
 	case 0: //none
-		turn2(-1500);
 		break;
 	case 1:
 		Auton1();
