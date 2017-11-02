@@ -1,16 +1,14 @@
 #pragma config(Sensor, in1,    pLift,          sensorPotentiometer)
-#pragma config(Sensor, in2,    gMobile,        sensorGyro)
+#pragma config(Sensor, in2,    gBase,          sensorGyro)
 #pragma config(Sensor, in3,    lMobile,        sensorLineFollower)
 #pragma config(Sensor, in4,    pClaw,          sensorPotentiometer)
-#pragma config(Sensor, in5,    gBase,          sensorGyro)
+#pragma config(Sensor, in5,    gMobile,        sensorGyro)
 #pragma config(Sensor, in6,    lLeft,          sensorLineFollower)
 #pragma config(Sensor, in7,    lMiddle,        sensorLineFollower)
 #pragma config(Sensor, in8,    lRight,         sensorLineFollower)
 #pragma config(Sensor, dgtl1,  qLeftDrive,     sensorQuadEncoder)
 #pragma config(Sensor, dgtl3,  qRightDrive,    sensorQuadEncoder)
-#pragma config(Sensor, dgtl5,  tLiftDown,      sensorTouch)
-#pragma config(Sensor, dgtl6,  tMobileDown,    sensorTouch)
-#pragma config(Sensor, dgtl7,  tMobileUp,      sensorTouch)
+#pragma config(Sensor, dgtl5,  tMobileUp,      sensorTouch)
 #pragma config(Sensor, dgtl9,  jAuton4,        sensorTouch)
 #pragma config(Sensor, dgtl10, jAuton3,        sensorTouch)
 #pragma config(Sensor, dgtl11, jAuton2,        sensorTouch)
@@ -47,7 +45,6 @@ int RightJoyMH; //Main Right X
 int RightJoySH; //Partner Right X
 int coneStack; //How many cones are currently in the stack
 int liftHeight; //Requested angle for lift
-int chainAngle; //Requested angle for chainbar
 int clawAngle; //Requested angle for claw
 int clawOpen; //Potentiometer value of when the claw is open
 int clawClose; //Potentiometer Value if when the claw is closed
@@ -116,6 +113,9 @@ void Lift(){//configure lift control
 void Mobile(){//configure mobile goal intake control
 	motor[mMobileLeft] = PowerCap(vexRT[Btn6D]*127 + vexRT[Btn5D]*-70+ vexRT[Btn8R]*-127);
 	motor[mMobileRight] = PowerCap(vexRT[Btn6D]*127 + vexRT[Btn5D]*-70+ vexRT[Btn8R]*-127);
+	if(vexRT[Btn7L] == 1){
+		SensorValue[gMobile] = 0;
+	}
 }
 
 void Cone(){//configure claw and chainbar control
@@ -130,6 +130,7 @@ void Control() {//consolidate control
 }
 
 #include "Autonomous.c"
+
 
 void pre_auton(){
 	bStopTasksBetweenModes = true;
