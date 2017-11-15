@@ -1,13 +1,13 @@
 #pragma config(Sensor, in1,    pLift,          sensorPotentiometer)
-#pragma config(Sensor, in2,    gBase,          sensorGyro)
+#pragma config(Sensor, in2,    gBase1,          sensorGyro)
 #pragma config(Sensor, in3,    lMobile,        sensorLineFollower)
 #pragma config(Sensor, in4,    pClaw,          sensorPotentiometer)
-#pragma config(Sensor, in5,    gMobile,        sensorGyro)
+#pragma config(Sensor, in5,    gMobile2,        sensorGyro)
 #pragma config(Sensor, in6,    lLeft,          sensorLineFollower)
 #pragma config(Sensor, in7,    lMiddle,        sensorLineFollower)
 #pragma config(Sensor, in8,    lRight,         sensorLineFollower)
-#pragma config(Sensor, dgtl1,  qLeftDrive,     sensorQuadEncoder)
-#pragma config(Sensor, dgtl3,  qRightDrive,    sensorQuadEncoder)
+#pragma config(Sensor, dgtl1,  qLeftDrive5,     sensorQuadEncoder)
+#pragma config(Sensor, dgtl3,  qRightDrive6,    sensorQuadEncoder)
 #pragma config(Sensor, dgtl5,  tMobileUp,      sensorTouch)
 #pragma config(Sensor, dgtl9,  jAuton4,        sensorTouch)
 #pragma config(Sensor, dgtl10, jAuton3,        sensorTouch)
@@ -43,6 +43,7 @@ int LeftJoyMH; //Main Left X
 int LeftJoySH; //Partner Left X
 int RightJoyMH; //Main Right X
 int RightJoySH; //Partner Right X
+int qRightCorrected; // Convert qRight Values to qLeft
 int coneStack; //How many cones are currently in the stack
 int liftHeight; //Requested angle for lift
 int clawAngle; //Requested angle for claw
@@ -53,7 +54,7 @@ string batteryPowerExpander; //String for lcd
 
 
 int JoyClear(int origVal) { //intake current joystick position
-	if(abs(origVal) < 10){ // if joystick is close to still just return 0
+	if(abs(origVal) < 15){ // if joystick is close to still just return 0
 		return 0;
 	}
 	else{
@@ -85,6 +86,7 @@ void Variables(){
 	LeftJoyMH = JoyClear(vexRT[Ch4]);
 	LeftJoySH = JoyClear(vexRT[Ch4Xmtr2]);
 	//Configure joysticks for deidling
+	qRightCorrected = -SensorValue[qRightDrive6] + 0;
 }
 
 void lDrive(int pwr){//intake power
@@ -113,9 +115,6 @@ void Lift(){//configure lift control
 void Mobile(){//configure mobile goal intake control
 	motor[mMobileLeft] = PowerCap(vexRT[Btn6D]*127 + vexRT[Btn5D]*-70+ vexRT[Btn8R]*-127);
 	motor[mMobileRight] = PowerCap(vexRT[Btn6D]*127 + vexRT[Btn5D]*-70+ vexRT[Btn8R]*-127);
-	if(vexRT[Btn7L] == 1){
-		SensorValue[gMobile] = 0;
-	}
 }
 
 void Cone(){//configure claw and chainbar control
@@ -129,8 +128,46 @@ void Control() {//consolidate control
 	Cone();
 }
 
+void reset(int sensor){ //intakes number associated with sensor or combination and resets those variables (set to 0)
+	//1 = gBase1
+	//2 = gMobile2
+	//3 = Gyros
+	//5 = qLeftDrive
+	//6 = qRightDrive
+	//11 = Quadratures
+	//0 = All Sensors
+	switch(sensor){
+	case 0:
+		SensorValue[gBase1] = 0;
+		SensorValue[gMobile2] = 0;
+		SensorValue[qLeftDrive5] = 0;
+		SensorValue[qRightDrive6] = 0;
+		break;
+	case 1:
+		SensorValue[gBase1] = 0;
+		break;
+	case 2:
+		SensorValue[gMobile2] = 0;
+		break;
+	case 3:
+		SensorValue[gBase1] = 0;
+		SensorValue[gMobile2] = 0;
+		break;
+	case 5:
+		SensorValue[qLeftDrive5] = 0;
+		break;
+	case 6:
+		SensorValue[qRightDrive6] = 0;
+		break;
+	case 11:
+		SensorValue[qLeftDrive5] = 0;
+		SensorValue[qRightDrive6] = 0;
+		break;
+	default:
+		break;
+	}
+}
 #include "Autonomous.c"
-
 
 void pre_auton(){
 	bStopTasksBetweenModes = true;
@@ -147,8 +184,7 @@ task usercontrol(){
 	motor[port8] = 0;
 	motor[port9] = 0;
 	motor[port10] = 0;
-	SensorValue[qLeftDrive] = 0;
-	SensorValue[qLeftDrive] = 0;
+	reset(0);
 	//reset motors
 	while(true){
 		Variables(); //configure variables
