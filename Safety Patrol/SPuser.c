@@ -6,7 +6,6 @@ int LeftJoyMH; //Main Left X
 int LeftJoySH; //Partner Left X
 int RightJoyMH; //Main Right X
 int RightJoySH; //Partner Right X
-int qRightCorrected; // Convert qRight Values to qLeft
 int coneStack; //How many cones are currently in the stack
 int liftHeight; //Requested angle for lift
 int clawAngle; //Requested angle for claw
@@ -49,7 +48,6 @@ void Variables(){
 	LeftJoyMH = JoyClear(vexRT[Ch4]);
 	LeftJoySH = JoyClear(vexRT[Ch4Xmtr2]);
 	//Configure joysticks for deidling
-	qRightCorrected = -SensorValue[qRightDrive8] + 0;
 }
 
 void lDrive(int pwr){//intake power
