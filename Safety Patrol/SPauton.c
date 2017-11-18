@@ -141,8 +141,7 @@ void driveMobile(int dis, int pwr){
 		moveDir = 1;
 	}
 	while(((dis > 0 && SensorValue[qLeftDrive7] <= -dis && SensorValue[qRightDrive8] >= dis) ||
-		(dis < 0 && SensorValue[qLeftDrive7] >= -dis && SensorValue[qRightDrive8] <= dis)) &&
-	(SensorValue[lMobile] >= 2000)){
+		(dis < 0 && SensorValue[qLeftDrive7] >= -dis && SensorValue[qRightDrive8] <= dis)) && (SensorValue[lMobile] >= 2000)){
 		lDrive(pwr*moveDir);
 		rDrive(pwr*moveDir);
 	}
@@ -163,9 +162,9 @@ void PIDmove(int dis, int pwr){
 	timer = nSysTime;
 	while((dis < 0 && SensorValue[qLeftDrive7] <= -dis && SensorValue[qRightDrive8] >= dis) ||
 		(dis > 0 && SensorValue[qLeftDrive7] >= -dis && SensorValue[qRightDrive8] <= dis)){
-		if(nSysTime - timer >= 100){
+		if(nSysTime - timer >= 100 && SensorValue[qLeftDrive7] >= dis*.75){
 			disDiff = -(SensorValue[qLeftDrive7] - oldQuadValue);
-			motDiff = (pwr*1.0-30)/dis*disDiff;
+			motDiff = (pwr*1.0-30)/(dis*.25)*disDiff;
 			NMV = CMV - motDiff;
 			oldQuadValue = SensorValue[qLeftDrive7];
 			CMV = NMV;
@@ -193,18 +192,28 @@ void PIDmoveMobile(int dis,int pwr){
 	}
 	oldQuadValue = SensorValue[qLeftDrive7];
 	CMV = pwr*moveDir;
+	timer = nSysTime;
 	while(((dis < 0 && SensorValue[qLeftDrive7] <= -dis && SensorValue[qRightDrive8] >= dis) ||
-		(dis > 0 && SensorValue[qLeftDrive7] >= -dis && SensorValue[qRightDrive8] <= dis)) &&
-	(SensorValue[lMobile] >= 2000)){
-		disDiff = SensorValue[qLeftDrive7] + oldQuadValue;
-		motDiff = (pwr - 0)/dis*disDiff;
-		NMV = CMV - motDiff;
+		(dis > 0 && SensorValue[qLeftDrive7] >= -dis && SensorValue[qRightDrive8] <= dis)) && (SensorValue[lMobile] >= 2000)){
+		if(nSysTime - timer >= 100 && SensorValue[qLeftDrive7] >= dis*.75){
+			disDiff = -(SensorValue[qLeftDrive7] - oldQuadValue);
+			motDiff = (pwr*1.0-30)/dis*disDiff;
+			NMV = CMV - motDiff;
+			oldQuadValue = SensorValue[qLeftDrive7];
+			CMV = NMV;
+			timer = nSysTime;
+		}
 		lDrive(NMV);
 		rDrive(NMV);
-		CMV = NMV;
-		oldQuadValue = SensorValue[qLeftDrive7];
 	}
 	reset(15);
+	lDrive(0);
+	rDrive(0);
+	CMV = 0;
+	NMV = 0;
+	motDiff = 0;
+	oldQuadValue = 0;
+	motDiff = 0;
 }
 
 void PIDturnG(int angle, int pwr){
@@ -214,17 +223,28 @@ void PIDturnG(int angle, int pwr){
 	else{
 		turnDir = 1;
 	}
+	oldQuadValue = SensorValue[qLeftDrive7];
+	CMV = pwr*moveDir;
+	timer = nSysTime;
 	while((angle < 0 && SensorValue[gBase1] > angle) || (angle > 0 && SensorValue[gBase1] < angle)){
-		disDiff = SensorValue[qLeftDrive7] + oldQuadValue;
-		motDiff = (pwr - 0)/angle*disDiff;
-		NMV = CMV - motDiff;
-		lDrive(NMV*turnDir);
-		rDrive(NMV*-turnDir);
-		CMV = NMV;
-		oldQuadValue = SensorValue[qLeftDrive7];
+		if(nSysTime - timer >= 100 && SensorValue[qLeftDrive7] >= angle*.75){
+			disDiff = -(SensorValue[qLeftDrive7] - oldQuadValue);
+			motDiff = (pwr*1.0-30)/(angle*.25)*disDiff;
+			NMV = CMV - motDiff;
+			oldQuadValue = SensorValue[qLeftDrive7];
+			CMV = NMV;
+			timer = nSysTime;
+		}
+		lDrive(NMV);
+		rDrive(NMV);
 	}
-	rDrive(0);
 	lDrive(0);
+	rDrive(0);
+	CMV = 0;
+	NMV = 0;
+	motDiff = 0;
+	oldQuadValue = 0;
+	motDiff = 0;
 	reset(1);
 }
 
@@ -235,18 +255,29 @@ void PIDturnQ(int dis, int pwr){
 	else{
 		moveDir = 1;
 	}
+	oldQuadValue = SensorValue[qLeftDrive7];
+	CMV = pwr*moveDir;
+	timer = nSysTime;
 	while((dis < 0 && SensorValue[qLeftDrive7] <= -dis && SensorValue[qRightDrive8] >= dis) ||
 		(dis > 0 && SensorValue[qLeftDrive7] >= -dis && SensorValue[qRightDrive8] <= dis)){
-		disDiff = SensorValue[qLeftDrive7] - oldQuadValue;
-		motDiff = ((pwr - 0)/dis)*disDiff;
-		NMV = CMV - motDiff;
-		lDrive(NMV*moveDir);
-		rDrive(NMV*-moveDir);
-		CMV = NMV;
-		oldQuadValue = SensorValue[qLeftDrive7];
+		if(nSysTime - timer >= 100 && SensorValue[qLeftDrive7] >= dis*.75){
+			disDiff = -(SensorValue[qLeftDrive7] - oldQuadValue);
+			motDiff = (pwr*1.0-30)/(dis*.25)*disDiff;
+			NMV = CMV - motDiff;
+			oldQuadValue = SensorValue[qLeftDrive7];
+			CMV = NMV;
+			timer = nSysTime;
+		}
+		lDrive(NMV);
+		rDrive(NMV);
 	}
 	lDrive(0);
 	rDrive(0);
+	CMV = 0;
+	NMV = 0;
+	motDiff = 0;
+	oldQuadValue = 0;
+	motDiff = 0;
 	reset(15);
 }
 
@@ -272,7 +303,7 @@ void autonSelecter(){
 }
 
 void pre_auton(){
-  bStopTasksBetweenModes = true;
+	bStopTasksBetweenModes = true;
 }
 
 task autonomous(){
