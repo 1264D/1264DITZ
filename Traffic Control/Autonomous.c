@@ -38,13 +38,13 @@ void turnG(int angle){
 	else{
 		turnDir = 1;
 	}
-	while((angle < 0 && SensorValue[gBase1] > angle) || (angle > 0 && SensorValue[gBase1] < angle)){
+	while((angle < 0 && SensorValue[gBase1] < -angle) || (angle > 0 && SensorValue[gBase1] > -angle)){
 		lDrive(127*turnDir);
 		rDrive(127*-turnDir);
 	}
 	rDrive(0);
 	lDrive(0);
-	reset(11);
+	reset(0);
 }
 
 void turnQ(int dis){
@@ -54,7 +54,8 @@ void turnQ(int dis){
 	else{
 		moveDir = 1;
 	}
-	while((dis < 0 && SensorValue[qLeftDrive5] >= dis && qRightCorrected >= dis) ||
+	while((dis < 0 && SensorValue
+		[qLeftDrive5] >= dis && qRightCorrected >= dis) ||
 		(dis > 0 && SensorValue[qLeftDrive5] <= dis && qRightCorrected <= dis)){
 		lDrive(127*moveDir);
 		rDrive(127*-moveDir);
@@ -63,14 +64,15 @@ void turnQ(int dis){
 	rDrive(0);
 	reset(11);
 }
+
 void dr4b(int angle, int pwr){
-	if(angle < 0){
+	if(angle < SensorValue[pLift]){
 		liftDir = -1;
 	}
 	else{
 		liftDir = 1;
 	}
-	while((angle > 0 && SensorValue[pLift] < angle) || (angle < 0 && SensorValue[pLift] > angle)){
+	while((angle > SensorValue[pLift] && SensorValue[pLift] < angle) || (angle < SensorValue[pLift] && SensorValue[pLift] > angle)){
 		motor[mLiftLeft] = pwr*liftDir;
 		motor[mLiftRight] = pwr*liftDir;
 	}
@@ -85,8 +87,8 @@ void drive(int dis, int Lpwr, int Rpwr){
 	else{
 		moveDir = 1;
 	}
-	while(((dis < 0 && SensorValue[qLeftDrive5] >= dis && qRightCorrected <= dis) ||
-		(dis > 0 && SensorValue[qLeftDrive5] <= dis && qRightCorrected >= dis))){
+	while(((dis > 0 && SensorValue[qLeftDrive5] <= dis && SensorValue[qRightDrive6] >= -dis) ||
+		(dis < 0 && SensorValue[qLeftDrive5] >= dis && SensorValue[qRightDrive6] <= -dis))){
 		lDrive(Lpwr*moveDir);
 		rDrive(Rpwr*moveDir);
 	}
@@ -102,8 +104,8 @@ void driveMobile(int dis, int Lpwr, int Rpwr){
 	else{
 		moveDir = 1;
 	}
-	while(((dis < 0 && SensorValue[qLeftDrive5] >= dis && qRightCorrected <= dis) ||
-		(dis > 0 && SensorValue[qLeftDrive5] <= dis && qRightCorrected >= dis)) &&
+	while(((dis > 0 && SensorValue[qLeftDrive5] <= dis && SensorValue[qRightDrive6] >= -dis) ||
+		(dis < 0 && SensorValue[qLeftDrive5] >= dis && SensorValue[qRightDrive6] <= -dis)) &&
 	(SensorValue[lMobile] >= 2000)){
 		lDrive(Lpwr*moveDir);
 		rDrive(Rpwr*moveDir);
@@ -202,10 +204,10 @@ void PIDturnQ(int dis, int pwr){
 void Auton1(){ //stationary auton
 	drive(225,80,80);
 	wait1Msec(250);
+	motor[mClaw] = 70;
 	dr4b(3700,127);
 	motor[mLiftLeft] = 127;
 	motor[mLiftRight] = 127;
-	motor[mClaw] = 70;
 	wait1Msec(500);
 	motor[mClaw] = -70;
 	wait1Msec(500);
@@ -217,17 +219,19 @@ void Auton1(){ //stationary auton
 
 void Auton2(){ //left mogo auton
 	dr4b(2400,127);
+	motor[mClaw] = 127;
 	mobile(100,800);
+	motor[mClaw] = 0;
 	driveMobile(-1600,127,100);
 	mobile(127,700);
 	drive(1000,127,100);
-	turnQ(-610);
+	turnG(1300);
 	drive(-1000,127,100);
-	drive(-420,127,0);
-	drive(-100,127,100);
-	mobile(75, 400);
+	turnG(900);
+	drive(-1000,127,100);
+	mobile(100, 400);
 	drive(400,127,100);
-	SensorValue[gMobile2] = 0;
+
 	//Lift Up
 	//Lower mobile
 	// drive forward
@@ -240,21 +244,18 @@ void Auton2(){ //left mogo auton
 
 void Auton3(){
 	dr4b(2400,127);
+	motor[mClaw] = 127;
 	mobile(100,800);
+	motor[mClaw] = 0;
 	driveMobile(-1600,127,100);
 	mobile(127,700);
 	drive(1000,127,100);
-	turnQ(720);
-	drive(-800,127,100);
-	while(SensorValue[qRightDrive6] <= 500){
-		rDrive(127);
-	}
-	SensorValue[qRightDrive6] = 0;
-	rDrive(0);
-	drive(-100,127,100);
-	mobile(75, 400);
+	turnG(-1300);
+	drive(-1000,127,100);
+	turnG(-900);
+	drive(-1000,127,100);
+	mobile(100, 400);
 	drive(400,127,100);
-	SensorValue[gMobile2] = 0;
 	//Lift Up
 	//Lower mobile
 	//Drive forward
@@ -264,6 +265,33 @@ void Auton3(){
 	//dump mobile
 	//back up
 }
+
+void Auton4(){
+	motor[mClaw] = 70;
+	dr4b(2400,127);
+	mobile(100,800);
+	motor[mClaw] = 0;
+	driveMobile(-1600,127,100);
+	mobile(127,700);
+	motor[mClaw] = 70;
+	drive(1300,127,100);
+	motor[mClaw] = 0;
+	turnG(2100);
+	mobile(100,800);
+	drive(400,127,100);
+	mobile(127,700);
+	dr4b(2800,127);
+	motor[mClaw] = 80;
+	drive(-200,85,80);
+	turnG(2100);
+	drive(200,85,80);
+	motor[mClaw] = 0;
+	dr4b(2800,80);
+	motor[mClaw] = -80;
+	drive(-100,127,100);
+	motor[mClaw] = 0;
+}
+
 void autonSelecter(){
 	if(SensorValue[jAuton1] == true){
 		autonNumber += 1;
@@ -288,6 +316,9 @@ void autonSelecter(){
 		break;
 	case 3:
 		Auton3();
+		break;
+	case 4:
+		Auton4();
 	default:
 		break;
 	}
@@ -295,7 +326,7 @@ void autonSelecter(){
 
 task autonomous(){
 	autonNumber = 0;
-	reset(14);
+	reset(0);
 	mobileOut = false;
 	autonSelecter();
 }

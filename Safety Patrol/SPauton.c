@@ -1,13 +1,12 @@
 #pragma config(Sensor, in1,    gBase1,         sensorGyro)
 #pragma config(Sensor, in2,    gLift2,         sensorGyro)
 #pragma config(Sensor, in3,    gMobile3,       sensorGyro)
-#pragma config(Sensor, in4,    lMobile,        sensorLineFollower)
-#pragma config(Sensor, in5,    lLeft,          sensorLineFollower)
-#pragma config(Sensor, in6,    lMiddle,        sensorLineFollower)
-#pragma config(Sensor, in7,    lRight,         sensorLineFollower)
-#pragma config(Sensor, in8,    pClaw,          sensorPotentiometer)
-#pragma config(Sensor, dgtl1,  qLeftDrive7,    sensorQuadEncoder)
-#pragma config(Sensor, dgtl3,  qRightDrive8,   sensorQuadEncoder)
+#pragma config(Sensor, in4,    gChainbar4,     sensorGyro)
+#pragma config(Sensor, in5,    lMobile,        sensorLineFollower)
+#pragma config(Sensor, in6,    lRollers,       sensorLineFollower)
+#pragma config(Sensor, dgtl1,  qLeftDrive11,   sensorQuadEncoder)
+#pragma config(Sensor, dgtl3,  qRightDrive12,  sensorQuadEncoder)
+#pragma config(Sensor, dgtl5,  qRollers13,     sensorQuadEncoder)
 #pragma config(Sensor, dgtl9,  jAuton8,        sensorTouch)
 #pragma config(Sensor, dgtl10, jAuton4,        sensorTouch)
 #pragma config(Sensor, dgtl11, jAuton2,        sensorTouch)
@@ -66,7 +65,7 @@ void mobile(int pwr, int angle){
 	}
 	motor[mMobileLeft] = 0;
 	motor[mMobileRight] = 0;
-	reset(2);
+	reset(3);
 }
 
 void turnG(int angle){
@@ -82,7 +81,7 @@ void turnG(int angle){
 	}
 	rDrive(0);
 	lDrive(0);
-	reset(11);
+	reset(0);
 }
 
 void turnQ(int dis){
@@ -92,14 +91,14 @@ void turnQ(int dis){
 	else{
 		moveDir = 1;
 	}
-	while((dis < 0 && SensorValue[qLeftDrive7] >= dis && SensorValue[qRightDrive8] <= -dis) ||
-		(dis > 0 && SensorValue[qLeftDrive7] <= dis && SensorValue[qRightDrive8] >= -dis)){
+	while((dis < 0 && SensorValue[qLeftDrive11] >= dis && SensorValue[qRightDrive12] <= -dis) ||
+		(dis > 0 && SensorValue[qLeftDrive11] <= dis && SensorValue[qRightDrive12] >= -dis)){
 		lDrive(127*moveDir);
 		rDrive(127*-moveDir);
 	}
 	lDrive(0);
 	rDrive(0);
-	reset(11);
+	reset(0);
 }
 void dr4b(int angle, int pwr){
 	if(angle < 0){
@@ -123,14 +122,14 @@ void drive(int dis, int pwr){
 	else{
 		moveDir = 1;
 	}
-	while((dis < 0 && SensorValue[qLeftDrive7] <= -dis && SensorValue[qRightDrive8] >= dis) ||
-		(dis > 0 && SensorValue[qLeftDrive7] >= -dis && SensorValue[qRightDrive8] <= dis)){
+	while((dis < 0 && SensorValue[qLeftDrive11] <= -dis && SensorValue[qRightDrive12] >= dis) ||
+		(dis > 0 && SensorValue[qLeftDrive11] >= -dis && SensorValue[qRightDrive12] <= dis)){
 		lDrive(pwr*moveDir);
 		rDrive(pwr*moveDir);
 	}
 	lDrive(0);
 	rDrive(0);
-	reset(15);
+	reset(36);
 }
 
 void driveMobile(int dis, int pwr){
@@ -140,14 +139,14 @@ void driveMobile(int dis, int pwr){
 	else{
 		moveDir = 1;
 	}
-	while(((dis > 0 && SensorValue[qLeftDrive7] <= -dis && SensorValue[qRightDrive8] >= dis) ||
-		(dis < 0 && SensorValue[qLeftDrive7] >= -dis && SensorValue[qRightDrive8] <= dis)) && (SensorValue[lMobile] >= 2000)){
+	while(((dis > 0 && SensorValue[qLeftDrive11] <= -dis && SensorValue[qRightDrive12] >= dis) ||
+		(dis < 0 && SensorValue[qLeftDrive11] >= -dis && SensorValue[qRightDrive12] <= dis)) && (SensorValue[lMobile] >= 2000)){
 		lDrive(pwr*moveDir);
 		rDrive(pwr*moveDir);
 	}
 	lDrive(0);
 	rDrive(0);
-	reset(15);
+	reset(36);
 }
 
 void PIDmove(int dis, int pwr){
@@ -160,20 +159,20 @@ void PIDmove(int dis, int pwr){
 	CMV = pwr*moveDir;
 	NMV = CMV;
 	timer = nSysTime;
-	while((dis < 0 && SensorValue[qLeftDrive7] <= -dis && SensorValue[qRightDrive8] >= dis) ||
-		(dis > 0 && SensorValue[qLeftDrive7] >= -dis && SensorValue[qRightDrive8] <= dis)){
-		if(nSysTime - timer >= 100 && SensorValue[qLeftDrive7] >= dis*.75){
-			disDiff = -(SensorValue[qLeftDrive7] - oldQuadValue);
+	while((dis < 0 && SensorValue[qLeftDrive11] <= -dis && SensorValue[qRightDrive12] >= dis) ||
+		(dis > 0 && SensorValue[qLeftDrive11] >= -dis && SensorValue[qRightDrive12] <= dis)){
+		if(nSysTime - timer >= 100 && SensorValue[qLeftDrive11] >= dis*.75){
+			disDiff = -(SensorValue[qLeftDrive11] - oldQuadValue);
 			motDiff = (pwr*1.0-30)/(dis*.25)*disDiff;
 			NMV = CMV - motDiff;
-			oldQuadValue = SensorValue[qLeftDrive7];
+			oldQuadValue = SensorValue[qLeftDrive11];
 			CMV = NMV;
 			timer = nSysTime;
 		}
 		lDrive(NMV);
 		rDrive(NMV);
 	}
-	reset(15);
+	reset(36);
 	lDrive(0);
 	rDrive(0);
 	CMV = 0;
@@ -190,23 +189,23 @@ void PIDmoveMobile(int dis,int pwr){
 	else{
 		moveDir = 1;
 	}
-	oldQuadValue = SensorValue[qLeftDrive7];
+	oldQuadValue = SensorValue[qLeftDrive11];
 	CMV = pwr*moveDir;
 	timer = nSysTime;
-	while(((dis < 0 && SensorValue[qLeftDrive7] <= -dis && SensorValue[qRightDrive8] >= dis) ||
-		(dis > 0 && SensorValue[qLeftDrive7] >= -dis && SensorValue[qRightDrive8] <= dis)) && (SensorValue[lMobile] >= 2000)){
-		if(nSysTime - timer >= 100 && SensorValue[qLeftDrive7] >= dis*.75){
-			disDiff = -(SensorValue[qLeftDrive7] - oldQuadValue);
+	while(((dis < 0 && SensorValue[qLeftDrive11] <= -dis && SensorValue[qRightDrive12] >= dis) ||
+		(dis > 0 && SensorValue[qLeftDrive11] >= -dis && SensorValue[qRightDrive12] <= dis)) && (SensorValue[lMobile] >= 2000)){
+		if(nSysTime - timer >= 100 && SensorValue[qLeftDrive11] >= dis*.75){
+			disDiff = -(SensorValue[qLeftDrive11] - oldQuadValue);
 			motDiff = (pwr*1.0-30)/dis*disDiff;
 			NMV = CMV - motDiff;
-			oldQuadValue = SensorValue[qLeftDrive7];
+			oldQuadValue = SensorValue[qLeftDrive11];
 			CMV = NMV;
 			timer = nSysTime;
 		}
 		lDrive(NMV);
 		rDrive(NMV);
 	}
-	reset(15);
+	reset(36);
 	lDrive(0);
 	rDrive(0);
 	CMV = 0;
@@ -223,15 +222,15 @@ void PIDturnG(int angle, int pwr){
 	else{
 		turnDir = 1;
 	}
-	oldQuadValue = SensorValue[qLeftDrive7];
+	oldQuadValue = SensorValue[qLeftDrive11];
 	CMV = pwr*moveDir;
 	timer = nSysTime;
 	while((angle < 0 && SensorValue[gBase1] > angle) || (angle > 0 && SensorValue[gBase1] < angle)){
-		if(nSysTime - timer >= 100 && SensorValue[qLeftDrive7] >= angle*.75){
-			disDiff = -(SensorValue[qLeftDrive7] - oldQuadValue);
+		if(nSysTime - timer >= 100 && SensorValue[qLeftDrive11] >= angle*.75){
+			disDiff = -(SensorValue[qLeftDrive11] - oldQuadValue);
 			motDiff = (pwr*1.0-30)/(angle*.25)*disDiff;
 			NMV = CMV - motDiff;
-			oldQuadValue = SensorValue[qLeftDrive7];
+			oldQuadValue = SensorValue[qLeftDrive11];
 			CMV = NMV;
 			timer = nSysTime;
 		}
@@ -245,7 +244,7 @@ void PIDturnG(int angle, int pwr){
 	motDiff = 0;
 	oldQuadValue = 0;
 	motDiff = 0;
-	reset(1);
+	reset(0);
 }
 
 void PIDturnQ(int dis, int pwr){
@@ -255,16 +254,16 @@ void PIDturnQ(int dis, int pwr){
 	else{
 		moveDir = 1;
 	}
-	oldQuadValue = SensorValue[qLeftDrive7];
+	oldQuadValue = SensorValue[qLeftDrive11];
 	CMV = pwr*moveDir;
 	timer = nSysTime;
-	while((dis < 0 && SensorValue[qLeftDrive7] <= -dis && SensorValue[qRightDrive8] >= dis) ||
-		(dis > 0 && SensorValue[qLeftDrive7] >= -dis && SensorValue[qRightDrive8] <= dis)){
-		if(nSysTime - timer >= 100 && SensorValue[qLeftDrive7] >= dis*.75){
-			disDiff = -(SensorValue[qLeftDrive7] - oldQuadValue);
+	while((dis < 0 && SensorValue[qLeftDrive11] <= -dis && SensorValue[qRightDrive12] >= dis) ||
+		(dis > 0 && SensorValue[qLeftDrive11] >= -dis && SensorValue[qRightDrive12] <= dis)){
+		if(nSysTime - timer >= 100 && SensorValue[qLeftDrive11] >= dis*.75){
+			disDiff = -(SensorValue[qLeftDrive11] - oldQuadValue);
 			motDiff = (pwr*1.0-30)/(dis*.25)*disDiff;
 			NMV = CMV - motDiff;
-			oldQuadValue = SensorValue[qLeftDrive7];
+			oldQuadValue = SensorValue[qLeftDrive11];
 			CMV = NMV;
 			timer = nSysTime;
 		}
@@ -278,7 +277,7 @@ void PIDturnQ(int dis, int pwr){
 	motDiff = 0;
 	oldQuadValue = 0;
 	motDiff = 0;
-	reset(15);
+	reset(36);
 }
 
 void autonSelecter(){

@@ -7,6 +7,7 @@ int LeftJoySH; //Partner Left X
 int RightJoyMH; //Main Right X
 int RightJoySH; //Partner Right X
 int coneStack; //How many cones are currently in the stack
+int chainAngle;
 int liftHeight; //Requested angle for lift
 int clawAngle; //Requested angle for claw
 int clawOpen; //Potentiometer value of when the claw is open
@@ -74,8 +75,14 @@ void Lift(){//configure lift control
 }
 
 void Mobile(){//configure mobile goal intake control
-	motor[mMobileLeft] = PowerCap(vexRT[Btn6D]*127 + vexRT[Btn5D]*-70+ vexRT[Btn8R]*-127);
-	motor[mMobileRight] = PowerCap(vexRT[Btn6D]*127 + vexRT[Btn5D]*-70+ vexRT[Btn8R]*-127);
+	if(SensorValue[gMobile3] > 20){
+		motor[mMobileLeft] = PowerCap(vexRT[Btn6D]*127 + vexRT[Btn5D]*-70+ vexRT[Btn8R]*-127);
+		motor[mMobileRight] = PowerCap(vexRT[Btn6D]*127 + vexRT[Btn5D]*-70+ vexRT[Btn8R]*-127);
+	}
+	else{
+		motor[mLiftLeft] = PowerCap(vexRT[Btn6D]*127 + vexRT[Btn5D]*-127);
+		motor[mLiftRight] = PowerCap(vexRT[Btn6D]*127 + vexRT[Btn5D]*-127);
+	}
 }
 
 void Cone(){//configure claw and chainbar control
@@ -90,22 +97,43 @@ void Control() {//consolidate control
 	Cone();
 }
 
+void stack(){//configure lift and chainbar angles based on how many cones are on the stack
+	coneStack++;// add one to stack
+	switch(coneStack){//How many cones are currently on the stack
+	case 1:liftHeight = 0; chainAngle = 0;
+	case 2:liftHeight = 0; chainAngle = 0;
+	case 3:liftHeight = 0; chainAngle = 0;
+	case 4:liftHeight = 0; chainAngle = 0;
+	case 5:liftHeight = 0; chainAngle = 0;
+	case 6:liftHeight = 0; chainAngle = 0;
+	case 7:liftHeight = 0; chainAngle = 0;
+	case 8:liftHeight = 0; chainAngle = 0;
+	case 9:liftHeight = 0; chainAngle = 0;
+	case 10:liftHeight = 0; chainAngle = 0;
+	case 11:liftHeight = 0; chainAngle = 0;
+	case 12:liftHeight = 0; chainAngle = 0;
+	case 13:liftHeight = 0; chainAngle = 0;
+	}
+}
+
 void reset(int sensor){ //intakes number associated with sensor or combination and resets those variables (set to 0)
 	//1 = gBase1
 	//2 = gLift2
 	//3 = gMobile3
-	//6 = Gyros
-	//7 = qLeftDrive
-	//8 = qRightDrive
-	//15 = Quadratures
+	//4 = gChainbar4
+	//10 = Gyros
+	//11 = qLeftDrive
+	//12 = qRightDrive
+	//13 = qRollers
+	//36 = Quadratures
 	//0 = All Sensors
 	switch(sensor){
 	case 0:
 		SensorValue[gBase1] = 0;
 		SensorValue[gLift2] = 0;
 		SensorValue[gMobile3] = 0;
-		SensorValue[qLeftDrive7] = 0;
-		SensorValue[qRightDrive8] = 0;
+		SensorValue[qLeftDrive11] = 0;
+		SensorValue[qRightDrive12] = 0;
 		break;
 	case 1:
 		SensorValue[gBase1] = 0;
@@ -116,20 +144,28 @@ void reset(int sensor){ //intakes number associated with sensor or combination a
 	case 3:
 		SensorValue[gMobile3] = 0;
 		break;
-	case 6:
+	case 4:
+		SensorValue[gChainbar4] = 0;
+		break;
+	case 10:
 		SensorValue[gBase1] = 0;
 		SensorValue[gLift2] = 0;
 		SensorValue[gMobile3] = 0;
-		break;
-	case 7:
-		SensorValue[qLeftDrive7] = 0;
-		break;
-	case 8:
-		SensorValue[qRightDrive8] = 0;
+		SensorValue[gChainbar4] = 0;
 		break;
 	case 11:
-		SensorValue[qLeftDrive7] = 0;
-		SensorValue[qRightDrive8] = 0;
+		SensorValue[qLeftDrive11] = 0;
+		break;
+	case 12:
+		SensorValue[qRightDrive12] = 0;
+		break;
+	case 13:
+		SensorValue[qRollers13] = 0;
+		break;
+	case 36:
+		SensorValue[qLeftDrive11] = 0;
+		SensorValue[qRightDrive12] = 0;
+		SensorValue[qRollers13] = 0;
 		break;
 	default:
 		break;

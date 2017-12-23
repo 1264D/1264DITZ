@@ -296,21 +296,3 @@ motor[mChainbar] = 0;
 }
 }
 } */
-
-/*void Mobile(){//configure mobile goal intake control
-if(SensorValue[tMobileDown] == 1){//if intake is down, only let the motors go up
-motor[mMobileLeft] = PowerCap(vexRT[Btn5U]*127);
-motor[mMobileRight] = PowerCap(vexRT[Btn5U]*127);
-if(coneStack != 0){//zero the stack
-coneStack = 0;
-}
-}
-else if(SensorValue[tMobileUp] == 1){//if intake is up, only let the motors go down
-motor[mMobileLeft] = PowerCap(vexRT[Btn5D]*-127);
-motor[mMobileRight] = PowerCap(vexRT[Btn5D]*-127);
-}
-else{//if it is inbetween, controllable both directions
-motor[mMobileLeft] = PowerCap(vexRT[Btn5U]*127 + vexRT[Btn5D]*-127);
-motor[mMobileRight] = PowerCap(vexRT[Btn5U]*127 + vexRT[Btn5D]*-127);
-}
-}*/
