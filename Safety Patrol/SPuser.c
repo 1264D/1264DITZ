@@ -14,6 +14,8 @@ int clawOpen; //Potentiometer value of when the claw is open
 int clawClose; //Potentiometer Value if when the claw is closed
 string batteryMain; //String for lcd
 string batteryPowerExpander; //String for lcd
+float basePower;
+int baseToggle;
 
 
 int JoyClear(int origVal) { //intake current joystick position
@@ -64,8 +66,19 @@ void rDrive(int pwr){//intake power
 }
 
 void Base(){//Configure base control joysticks
-	lDrive(LeftJoyMV);//Left wheels are controlled by left joystick
-	rDrive(RightJoyMV);//Right wheels are controlled by right joystick
+	if(vexRT[Btn8R] == 1){
+		waitUntil(vexRT[Btn8R] == 0);
+		if(baseToggle == true){
+			baseToggle = false;
+			basePower = 1.0;
+		}
+		else{
+			baseToggle = true;
+			basePower = 0.5;
+		}
+	}
+	lDrive(LeftJoyMV*basePower);//Left wheels are controlled by left joystick
+	rDrive(RightJoyMV*basePower);//Right wheels are controlled by right joystick
 }
 
 void Lift(){//configure lift control
@@ -75,18 +88,20 @@ void Lift(){//configure lift control
 }
 
 void Mobile(){//configure mobile goal intake control
-	if(SensorValue[gMobile3] > 20){
-		motor[mMobileLeft] = PowerCap(vexRT[Btn6D]*127 + vexRT[Btn5D]*-70+ vexRT[Btn8R]*-127);
-		motor[mMobileRight] = PowerCap(vexRT[Btn6D]*127 + vexRT[Btn5D]*-70+ vexRT[Btn8R]*-127);
+	/*if(SensorValue[gMobile3] > 20){
+	motor[mMobileLeft] = PowerCap(vexRT[Btn6D]*127 + vexRT[Btn5D]*-70+ vexRT[Btn8R]*-127);
+	motor[mMobileRight] = PowerCap(vexRT[Btn6D]*127 + vexRT[Btn5D]*-70+ vexRT[Btn8R]*-127);
 	}
 	else{
-		motor[mLiftLeft] = PowerCap(vexRT[Btn6D]*127 + vexRT[Btn5D]*-127);
-		motor[mLiftRight] = PowerCap(vexRT[Btn6D]*127 + vexRT[Btn5D]*-127);
-	}
+	motor[mLiftLeft] = PowerCap(vexRT[Btn6D]*127 + vexRT[Btn5D]*-127);
+	motor[mLiftRight] = PowerCap(vexRT[Btn6D]*127 + vexRT[Btn5D]*-127);
+	}*/
+	motor[mMobileLeft] = PowerCap(vexRT[Btn6D]*70 + vexRT[Btn5D]*-127+ vexRT[Btn8D]*127);
+	motor[mMobileRight] = PowerCap(vexRT[Btn6D]*70 + vexRT[Btn5D]*-127+ vexRT[Btn8D]*127);
 }
 
 void Cone(){//configure claw and chainbar control
-	motor[mClaw] = PowerCap(vexRT[Btn5UXmtr2]*127 + vexRT[Btn6UXmtr2]*-127);//claw motion is controlled via right d-pad
+	motor[mClaw] = PowerCap(vexRT[Btn6DXmtr2]*-127 + vexRT[Btn6UXmtr2]*127 + vexRT[Btn5UXmtr2]*70 + vexRT[Btn5DXmtr2]*-70);//claw motion is controlled via right d-pad
 	motor[mChainbar] = PowerCap(RightJoySV);
 }
 
