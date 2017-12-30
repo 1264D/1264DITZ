@@ -9,11 +9,11 @@ int RightJoySH; //Partner Right X
 int coneStack; //How many cones are currently in the stack
 int chainAngle;
 int liftHeight; //Requested angle for lift
-static int liftMobileAngle = 0;
+static int liftMobileAngle = 200;
 
 string batteryMain; //String for lcd
 string batteryPowerExpander; //String for lcd
-float basePower;
+float basePower = 1.0;
 int baseToggle;
 
 
@@ -87,7 +87,7 @@ void Lift(){//configure lift control
 }
 
 void Mobile(){//configure mobile goal intake control
-	if(SensorValue[gMobile3] > liftMobileAngle){
+	if(SensorValue[gLift2] > liftMobileAngle){
 		motor[mMobileLeft] = PowerCap(vexRT[Btn6D]*127 + vexRT[Btn5D]*-70+ vexRT[Btn8R]*-127);
 		motor[mMobileRight] = PowerCap(vexRT[Btn6D]*127 + vexRT[Btn5D]*-70+ vexRT[Btn8R]*-127);
 	}
@@ -98,7 +98,7 @@ void Mobile(){//configure mobile goal intake control
 }
 
 void Cone(){//configure claw and chainbar control
-	motor[mClaw] = PowerCap(vexRT[Btn6DXmtr2]*-127 + vexRT[Btn6UXmtr2]*127 + vexRT[Btn5UXmtr2]*70 + vexRT[Btn5DXmtr2]*-70);//claw motion is controlled via right d-pad
+	motor[mClaw] = PowerCap(vexRT[Btn6DXmtr2]*-50 + vexRT[Btn6UXmtr2]*50 + vexRT[Btn5UXmtr2]*127 + vexRT[Btn5DXmtr2]*-127);//claw motion is controlled via right d-pad
 	motor[mChainbar] = PowerCap(RightJoySV);
 }
 
@@ -198,5 +198,14 @@ task usercontrol(){
 	while(true){
 		Variables(); //configure variables
 		Control();//set control
+		if(vexRT[Btn7U] == 1){
+		SensorValue[gBase1] = 0;
+		SensorValue[gLift2] = 0;
+		SensorValue[gMobile3] = 0;
+		SensorValue[gChainbar4] = 0;
+		SensorValue[qLeftDrive11] = 0;
+		SensorValue[qRightDrive12] = 0;
+		SensorValue[qRollers13] = 0;
+		}
 	}
 }

@@ -4,6 +4,8 @@
 #pragma config(Sensor, in4,    gChainbar4,     sensorGyro)
 #pragma config(Sensor, in5,    lMobile,        sensorLineFollower)
 #pragma config(Sensor, in6,    lRollers,       sensorLineFollower)
+#pragma config(Sensor, in7,    ,               sensorGyro)
+#pragma config(Sensor, in8,    ,               sensorGyro)
 #pragma config(Sensor, dgtl1,  jAuton1,        sensorTouch)
 #pragma config(Sensor, dgtl2,  jAuton2,        sensorTouch)
 #pragma config(Sensor, dgtl3,  jAuton4,        sensorTouch)
@@ -48,7 +50,7 @@ float CMV;
 float NMV;
 float motDiff;
 
-void mobile(int pwr, int angle){
+void mobile(int pwr, int angle){ //0 in, -900 out,
 	while(SensorValue[gLift2] < liftMobileAngle){
 		motor[mLiftLeft] = 127;
 		motor[mLiftRight] = 127;
@@ -56,13 +58,13 @@ void mobile(int pwr, int angle){
 	motor[mLiftLeft] = 0;
 	motor[mLiftRight] = 0;
 	timer = nSysTime;
-	if(angle > SensorValue[gMobile3]){
+	if(angle < SensorValue[gMobile3]){
 		mobileDir = 1;
 	}
 	else{
 		mobileDir = -1;
 	}
-	while(((mobileDir == 1 && SensorValue[gMobile3] <= angle) || (mobileDir == -1 && SensorValue[gMobile3] >= angle)) && nSysTime - timer <= 1000){
+	while(((mobileDir == 1 && SensorValue[gMobile3] >= angle) || (mobileDir == -1 && SensorValue[gMobile3] <= angle)) && nSysTime - timer <= 1000){
 		motor[mMobileLeft] = pwr*mobileDir;
 		motor[mMobileRight] = pwr*mobileDir;
 	}
@@ -131,15 +133,15 @@ void turnQ(int dis, int pwr){
 	reset(0);
 }
 
-void drive(int dis, int pwr){
+void drive(int pwr, int dis){
 	if(dis < 0){
 		moveDir = -1;
 	}
 	else{
 		moveDir = 1;
 	}
-	while((dis < 0 && SensorValue[qLeftDrive11] <= -dis && SensorValue[qRightDrive12] >= dis) ||
-		(dis > 0 && SensorValue[qLeftDrive11] >= -dis && SensorValue[qRightDrive12] <= dis)){
+	while((dis < 0 && SensorValue[qLeftDrive11] >= dis && SensorValue[qRightDrive12] <= -dis) ||
+		(dis > 0 && SensorValue[qLeftDrive11] <= dis && SensorValue[qRightDrive12] >= -dis)){
 		lDrive(pwr*moveDir);
 		rDrive(pwr*moveDir);
 	}
@@ -148,7 +150,7 @@ void drive(int dis, int pwr){
 	reset(0);
 }
 
-void driveMobile(int dis, int pwr){
+void driveMobile(int pwr, int dis){
 	if(dis < 0){
 		moveDir = -1;
 	}
@@ -297,6 +299,19 @@ void PIDturnQ(int dis, int pwr){
 }
 
 void auton1(){ //stationary
+	motor[mClaw] = 30;
+	dr4b(127,300);
+	motor[mLiftLeft] = 30;
+	motor[mLiftRight] = 30;
+	drive(60,600);
+	dr4b(50,250);
+	motor[mClaw] = -60;
+	dr4b(100,300);
+	motor[mLiftLeft] = 30;
+	motor[mLiftRight] = 30;
+	motor[mClaw] = 0;
+	drive(70,-300);
+	dr4b(50,100);
 	//lift up
 	//drive forward
 	//drop lift
@@ -306,7 +321,30 @@ void auton1(){ //stationary
 	//back up
 }
 
-void auton2(){ //Mobile left 20
+void auton2(){ //stationary
+	motor[mClaw] = 30;
+	dr4b(127,300);
+	motor[mLiftLeft] = 30;
+	motor[mLiftRight] = 30;
+	drive(60,850);
+	dr4b(50,250);
+	motor[mClaw] = -60;
+	dr4b(100,300);
+	motor[mLiftLeft] = 30;
+	motor[mLiftRight] = 30;
+	motor[mClaw] = 0;
+	drive(70,-300);
+	dr4b(50,100);
+	//lift up
+	//drive forward
+	//drop lift
+	//rollers reverse
+	//move lift up
+	//stop rollers
+	//back up
+}
+
+void auton3(){ //Mobile left 20
 	//mobile out
 	//drive forward
 	//intake mobile
@@ -322,7 +360,7 @@ void auton2(){ //Mobile left 20
 	//back up
 }
 
-void auton3(){ //mobile left 20
+void auton4(){ //mobile right 20
 	//mobile out
 	//drive forward
 	//intake mobile
@@ -342,6 +380,9 @@ void pragmaSkills(){ //Programming Skills
 	//refer to sheet
 }
 
+void autonTest(){
+}
+
 void autonSelecter(){
 	if(SensorValue[jAuton1] == true){
 		autonNumber += 1;
@@ -357,15 +398,18 @@ void autonSelecter(){
 	}
 	switch(autonNumber){
 	case 0: //none
+		autonTest();
 		break;
-	case 1: //Stationary
+	case 1: //Stationary close (center)
 		auton1();
 		break;
-	case 2: //Mobile Left 20
+	case 2: ////Stationary far (wings)
 		auton2();
 		break;
-	case 3: //Mobile Right 20
+	case 3: //Mobile Left 20
 		auton3();
+		break;
+	case 4: //Mobile Right 20
 		break;
 	case 15: //Skills
 		pragmaSkills();
