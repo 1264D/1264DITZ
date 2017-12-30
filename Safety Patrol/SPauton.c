@@ -37,8 +37,9 @@
 int moveDir;
 int liftDir;
 int turnDir;
+int mobileDir;
+int chainbarDir;
 int autonNumber;
-bool mobileOut;
 int timer;
 
 int oldQuadValue;
@@ -48,27 +49,56 @@ float NMV;
 float motDiff;
 
 void mobile(int pwr, int angle){
-	timer = nSysTime;
-	if(mobileOut == false){
-		while(SensorValue[gMobile3] > -angle && nSysTime - timer <= 1000){
-			motor[mMobileLeft] = -pwr;
-			motor[mMobileRight] = -pwr;
-		}
-		mobileOut = true;
+	while(SensorValue[gLift2] < liftMobileAngle){
+		motor[mLiftLeft] = 127;
+		motor[mLiftRight] = 127;
 	}
-	else if(mobileOut == true){
-		while(SensorValue[gMobile3] < angle && nSysTime - timer <= 1000){
-			motor[mMobileLeft] = pwr;
-			motor[mMobileRight] = pwr;
-		}
-		mobileOut = false;
+	motor[mLiftLeft] = 0;
+	motor[mLiftRight] = 0;
+	timer = nSysTime;
+	if(angle > SensorValue[gMobile3]){
+		mobileDir = 1;
+	}
+	else{
+		mobileDir = -1;
+	}
+	while(((mobileDir == 1 && SensorValue[gMobile3] <= angle) || (mobileDir == -1 && SensorValue[gMobile3] >= angle)) && nSysTime - timer <= 1000){
+		motor[mMobileLeft] = pwr*mobileDir;
+		motor[mMobileRight] = pwr*mobileDir;
 	}
 	motor[mMobileLeft] = 0;
 	motor[mMobileRight] = 0;
-	reset(3);
 }
 
-void turnG(int angle){
+void dr4b(int pwr, int angle){
+	if(angle > SensorValue[gLift2]){
+		liftDir = 1;
+	}
+	else{
+		liftDir = -1;
+	}
+	while((liftDir == 1 && SensorValue[gLift2] <= angle) || (liftDir == -1 && SensorValue[gLift2] >= angle)){
+		motor[mLiftLeft] = pwr*liftDir;
+		motor[mLiftRight] = pwr*liftDir;
+	}
+	motor[mLiftLeft] = 0;
+	motor[mLiftRight] = 0;
+}
+
+void chainbar(int angle){
+	if(angle > SensorValue[gChainbar4]){
+		chainbarDir = 1;
+	}
+	else{
+		chainbarDir = -1;
+	}
+	while((chainbarDir == 1 && SensorValue[gChainbar4] <= angle) || (chainbarDir == -1 && SensorValue[gChainbar4] >= angle)){
+		motor[mChainbar] = 127*chainbarDir;
+	}
+	motor[mChainbar] = 0;
+}
+
+void turnG(int angle,int pwr){
 	if(angle < 0){
 		turnDir = -1;
 	}
@@ -76,15 +106,15 @@ void turnG(int angle){
 		turnDir = 1;
 	}
 	while((angle < 0 && SensorValue[gBase1] > angle) || (angle > 0 && SensorValue[gBase1] < angle)){
-		lDrive(127*turnDir);
-		rDrive(127*-turnDir);
+		lDrive(pwr*turnDir);
+		rDrive(pwr*-turnDir);
 	}
 	rDrive(0);
 	lDrive(0);
 	reset(0);
 }
 
-void turnQ(int dis){
+void turnQ(int dis, int pwr){
 	if(dis > 0){
 		moveDir = -1;
 	}
@@ -93,26 +123,12 @@ void turnQ(int dis){
 	}
 	while((dis < 0 && SensorValue[qLeftDrive11] >= dis && SensorValue[qRightDrive12] <= -dis) ||
 		(dis > 0 && SensorValue[qLeftDrive11] <= dis && SensorValue[qRightDrive12] >= -dis)){
-		lDrive(127*moveDir);
-		rDrive(127*-moveDir);
+		lDrive(pwr*moveDir);
+		rDrive(pwr*-moveDir);
 	}
 	lDrive(0);
 	rDrive(0);
 	reset(0);
-}
-void dr4b(int angle, int pwr){
-	if(angle < 0){
-		liftDir = -1;
-	}
-	else{
-		liftDir = 1;
-	}
-	while((angle > 0 && SensorValue[gLift2] < angle) || (angle < 0 && SensorValue[gLift2] > angle)){
-		motor[mLiftLeft] = pwr*liftDir;
-		motor[mLiftRight] = pwr*liftDir;
-	}
-	motor[mLiftLeft] = 0;
-	motor[mLiftRight] = 0;
 }
 
 void drive(int dis, int pwr){
@@ -129,7 +145,7 @@ void drive(int dis, int pwr){
 	}
 	lDrive(0);
 	rDrive(0);
-	reset(36);
+	reset(0);
 }
 
 void driveMobile(int dis, int pwr){
@@ -146,7 +162,7 @@ void driveMobile(int dis, int pwr){
 	}
 	lDrive(0);
 	rDrive(0);
-	reset(36);
+	reset(0);
 }
 
 void PIDmove(int dis, int pwr){
@@ -172,7 +188,7 @@ void PIDmove(int dis, int pwr){
 		lDrive(NMV);
 		rDrive(NMV);
 	}
-	reset(36);
+	reset(0);
 	lDrive(0);
 	rDrive(0);
 	CMV = 0;
@@ -205,7 +221,7 @@ void PIDmoveMobile(int dis,int pwr){
 		lDrive(NMV);
 		rDrive(NMV);
 	}
-	reset(36);
+	reset(0);
 	lDrive(0);
 	rDrive(0);
 	CMV = 0;
@@ -277,7 +293,53 @@ void PIDturnQ(int dis, int pwr){
 	motDiff = 0;
 	oldQuadValue = 0;
 	motDiff = 0;
-	reset(36);
+	reset(0);
+}
+
+void auton1(){ //stationary
+	//lift up
+	//drive forward
+	//drop lift
+	//rollers reverse
+	//move lift up
+	//stop rollers
+	//back up
+}
+
+void auton2(){ //Mobile left 20
+	//mobile out
+	//drive forward
+	//intake mobile
+	//lift down
+	//eject cone
+	//back up
+	//turn towards center
+	//forward
+	//turn towards corner
+	//forward
+	//lift up
+	//mobile out
+	//back up
+}
+
+void auton3(){ //mobile left 20
+	//mobile out
+	//drive forward
+	//intake mobile
+	//lift down
+	//eject cone
+	//back up
+	//turn towards center
+	//forward
+	//turn towards corner
+	//forward
+	//lift up
+	//mobile out
+	//back up
+}
+
+void pragmaSkills(){ //Programming Skills
+	//refer to sheet
 }
 
 void autonSelecter(){
@@ -296,9 +358,27 @@ void autonSelecter(){
 	switch(autonNumber){
 	case 0: //none
 		break;
+	case 1: //Stationary
+		auton1();
+		break;
+	case 2: //Mobile Left 20
+		auton2();
+		break;
+	case 3: //Mobile Right 20
+		auton3();
+		break;
+	case 15: //Skills
+		pragmaSkills();
+		break;
 	default:
 		break;
 	}
+	//Stationary
+	//Mobile Left 20: 1 Cone, 4 Cone
+	//Mobile Right 20: 1 Cone, 4 Cone
+	//Mobile Left 10: 1 Cone, 4 Cone
+	//Mobile Right 10: 1 Cone, 4 Cone
+	//Programming skills
 }
 
 void pre_auton(){
@@ -308,7 +388,5 @@ void pre_auton(){
 task autonomous(){
 	autonNumber = 0;
 	reset(0);
-	mobileOut = false;
-	PIDmove(3000,90);
-	//autonSelecter();
+	autonSelecter();
 }

@@ -9,9 +9,8 @@ int RightJoySH; //Partner Right X
 int coneStack; //How many cones are currently in the stack
 int chainAngle;
 int liftHeight; //Requested angle for lift
-int clawAngle; //Requested angle for claw
-int clawOpen; //Potentiometer value of when the claw is open
-int clawClose; //Potentiometer Value if when the claw is closed
+static int liftMobileAngle = 0;
+
 string batteryMain; //String for lcd
 string batteryPowerExpander; //String for lcd
 float basePower;
@@ -88,16 +87,14 @@ void Lift(){//configure lift control
 }
 
 void Mobile(){//configure mobile goal intake control
-	/*if(SensorValue[gMobile3] > 20){
-	motor[mMobileLeft] = PowerCap(vexRT[Btn6D]*127 + vexRT[Btn5D]*-70+ vexRT[Btn8R]*-127);
-	motor[mMobileRight] = PowerCap(vexRT[Btn6D]*127 + vexRT[Btn5D]*-70+ vexRT[Btn8R]*-127);
+	if(SensorValue[gMobile3] > liftMobileAngle){
+		motor[mMobileLeft] = PowerCap(vexRT[Btn6D]*127 + vexRT[Btn5D]*-70+ vexRT[Btn8R]*-127);
+		motor[mMobileRight] = PowerCap(vexRT[Btn6D]*127 + vexRT[Btn5D]*-70+ vexRT[Btn8R]*-127);
 	}
 	else{
-	motor[mLiftLeft] = PowerCap(vexRT[Btn6D]*127 + vexRT[Btn5D]*-127);
-	motor[mLiftRight] = PowerCap(vexRT[Btn6D]*127 + vexRT[Btn5D]*-127);
-	}*/
-	motor[mMobileLeft] = PowerCap(vexRT[Btn6D]*70 + vexRT[Btn5D]*-127+ vexRT[Btn8D]*127);
-	motor[mMobileRight] = PowerCap(vexRT[Btn6D]*70 + vexRT[Btn5D]*-127+ vexRT[Btn8D]*127);
+		motor[mLiftLeft] = PowerCap(vexRT[Btn6D]*127 + vexRT[Btn5D]*-127);
+		motor[mLiftRight] = PowerCap(vexRT[Btn6D]*127 + vexRT[Btn5D]*-127);
+	}
 }
 
 void Cone(){//configure claw and chainbar control
@@ -145,24 +142,22 @@ void reset(int sensor){ //intakes number associated with sensor or combination a
 	switch(sensor){
 	case 0:
 		SensorValue[gBase1] = 0;
-		SensorValue[gLift2] = 0;
-		SensorValue[gMobile3] = 0;
 		SensorValue[qLeftDrive11] = 0;
 		SensorValue[qRightDrive12] = 0;
 		break;
 	case 1:
 		SensorValue[gBase1] = 0;
 		break;
-	case 2:
+	case 2://DO NOT RESET
 		SensorValue[gLift2] = 0;
 		break;
-	case 3:
+	case 3: //DO NOT RESET
 		SensorValue[gMobile3] = 0;
 		break;
-	case 4:
+	case 4: //DO NOT RESET
 		SensorValue[gChainbar4] = 0;
 		break;
-	case 10:
+	case 10: //DO NOT RESET
 		SensorValue[gBase1] = 0;
 		SensorValue[gLift2] = 0;
 		SensorValue[gMobile3] = 0;
