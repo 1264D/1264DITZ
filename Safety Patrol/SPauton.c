@@ -36,6 +36,8 @@
 
 #include "SPuser.c"
 
+int x;
+int lastDis;
 int moveDir;
 int liftDir;
 int turnDir;
@@ -148,6 +150,7 @@ void drive(int pwr, int dis){
 	lDrive(0);
 	rDrive(0);
 	reset(0);
+	lastDis = SensorValue[qLeftDrive11];
 }
 
 void driveMobile(int pwr, int dis){
@@ -165,9 +168,10 @@ void driveMobile(int pwr, int dis){
 	lDrive(0);
 	rDrive(0);
 	reset(0);
+	lastDis = SensorValue[qLeftDrive11];
 }
 
-void PIDmove(int dis, int pwr){
+void PIDmove(int pwr, int dis){
 	if(dis < 0){
 		moveDir = -1;
 	}
@@ -198,9 +202,10 @@ void PIDmove(int dis, int pwr){
 	motDiff = 0;
 	oldQuadValue = 0;
 	motDiff = 0;
+	lastDis = SensorValue[qLeftDrive11];
 }
 
-void PIDmoveMobile(int dis,int pwr){
+void PIDmoveMobile(int pwr,int dis){
 	if(dis < 0){
 		moveDir = -1;
 	}
@@ -231,9 +236,10 @@ void PIDmoveMobile(int dis,int pwr){
 	motDiff = 0;
 	oldQuadValue = 0;
 	motDiff = 0;
+	lastDis = SensorValue[qLeftDrive11];
 }
 
-void PIDturnG(int angle, int pwr){
+void PIDturnG(int pwr, int angle){
 	if(angle < 0){
 		turnDir = -1;
 	}
@@ -265,7 +271,7 @@ void PIDturnG(int angle, int pwr){
 	reset(0);
 }
 
-void PIDturnQ(int dis, int pwr){
+void PIDturnQ(int pwr, int dis){
 	if(dis < 0){
 		moveDir = -1;
 	}
@@ -303,7 +309,8 @@ void auton1(){ //stationary
 	dr4b(127,300);
 	motor[mLiftLeft] = 30;
 	motor[mLiftRight] = 30;
-	drive(60,600);
+	//drive(60,600);
+	PIDmove(60,600);
 	dr4b(50,250);
 	motor[mClaw] = -60;
 	dr4b(100,300);
@@ -326,7 +333,8 @@ void auton2(){ //stationary
 	dr4b(127,300);
 	motor[mLiftLeft] = 30;
 	motor[mLiftRight] = 30;
-	drive(60,850);
+	//drive(60,850);
+	PIDmove(60,600);
 	dr4b(50,250);
 	motor[mClaw] = -60;
 	dr4b(100,300);
@@ -345,6 +353,29 @@ void auton2(){ //stationary
 }
 
 void auton3(){ //Mobile left 20
+	mobile(127,-900);
+	driveMobile(127, x);
+	//PIDmoveMobile(127,x);
+	mobile(127,20);
+	//dr4b(127,20);
+	motor[mClaw] = -70;
+	drive(127, lastDis);
+	//PIDmove(127, lastDis);
+	turnG(70, -x); //-45?
+	//PIDturnG(70,-x);
+	drive(85,-x);
+	//PIDmove(85,-x);
+	turnG(85,-x); //-90?
+	//PIDturnG(85,-x);
+	drive(127,x);
+	//PIDmove(127,x);
+	mobile(127,-x);
+	motor[mMobileLeft] = -127;
+	motor[mMobileRight] = -127;
+	drive(127, -x); //short
+	motor[mMobileLeft ] =0;
+	motor[mMobileRight] = 0;
+	drive(127, -x); //long
 	//mobile out
 	//drive forward
 	//intake mobile
@@ -352,15 +383,37 @@ void auton3(){ //Mobile left 20
 	//eject cone
 	//back up
 	//turn towards center
-	//forward
+	//forward/back
 	//turn towards corner
 	//forward
-	//lift up
 	//mobile out
 	//back up
 }
 
 void auton4(){ //mobile right 20
+	mobile(127,-900);
+	driveMobile(127, x);
+	//PIDmoveMobile(127,x);
+	mobile(127,20);
+	//dr4b(127,20);
+	motor[mClaw] = -70;
+	drive(127, lastDis);
+	//PIDmove(127, lastDis);
+	turnG(70, x); //45?
+	//PIDturnG(70,-x);
+	drive(85,-x);
+	//PIDmove(85,-x);
+	turnG(85,x); //90?
+	//PIDturnG(85,x);
+	drive(127,x);
+	//PIDmove(127,x);
+	mobile(127,-x);
+	motor[mMobileLeft] = -127;
+	motor[mMobileRight] = -127;
+	drive(127, -x); //short
+	motor[mMobileLeft ] =0;
+	motor[mMobileRight] = 0;
+	drive(127, -x); //long
 	//mobile out
 	//drive forward
 	//intake mobile
@@ -410,6 +463,7 @@ void autonSelecter(){
 		auton3();
 		break;
 	case 4: //Mobile Right 20
+		auton4();
 		break;
 	case 15: //Skills
 		pragmaSkills();
@@ -431,6 +485,7 @@ void pre_auton(){
 
 task autonomous(){
 	autonNumber = 0;
-	reset(0);
+	reset(36);
+	reset(10);
 	autonSelecter();
 }

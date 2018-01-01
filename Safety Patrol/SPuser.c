@@ -78,6 +78,9 @@ void Base(){//Configure base control joysticks
 	}
 	lDrive(LeftJoyMV*basePower);//Left wheels are controlled by left joystick
 	rDrive(RightJoyMV*basePower);//Right wheels are controlled by right joystick
+	//lDrive(LeftJoyMV - LeftJoyMV*vexRT[Btn5U]*.5)
+	//rDrive(RightJoyMV - RightJoyMV*vexRT[Btn5U]*.5)
+
 }
 
 void Lift(){//configure lift control
