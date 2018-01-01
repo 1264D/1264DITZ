@@ -87,14 +87,8 @@ void Lift(){//configure lift control
 }
 
 void Mobile(){//configure mobile goal intake control
-	if(SensorValue[gLift2] > liftMobileAngle){
-		motor[mMobileLeft] = PowerCap(vexRT[Btn6D]*127 + vexRT[Btn5D]*-70+ vexRT[Btn8R]*-127);
-		motor[mMobileRight] = PowerCap(vexRT[Btn6D]*127 + vexRT[Btn5D]*-70+ vexRT[Btn8R]*-127);
-	}
-	else{
-		motor[mLiftLeft] = PowerCap(vexRT[Btn6D]*127 + vexRT[Btn5D]*-127);
-		motor[mLiftRight] = PowerCap(vexRT[Btn6D]*127 + vexRT[Btn5D]*-127);
-	}
+		motor[mMobileLeft] = PowerCap(vexRT[Btn6D]*70 + vexRT[Btn6U]*-127+ vexRT[Btn8U]*127);
+		motor[mMobileRight] = PowerCap(vexRT[Btn6D]*70 + vexRT[Btn6U]*-127+ vexRT[Btn8U]*127);
 }
 
 void Cone(){//configure claw and chainbar control
