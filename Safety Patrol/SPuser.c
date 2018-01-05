@@ -11,6 +11,9 @@ int chainAngle;
 int liftHeight; //Requested angle for lift
 static int liftMobileAngle = 200;
 
+bool rollerIn;
+bool rollerOut;
+
 string batteryMain; //String for lcd
 string batteryPowerExpander; //String for lcd
 float basePower = 1.0;
@@ -84,8 +87,8 @@ void Base(){//Configure base control joysticks
 }
 
 void Lift(){//configure lift control
-	motor[mLiftLeft] = PowerCap(LeftJoySV);
-	motor[mLiftRight] = PowerCap(LeftJoySV);
+	motor[mLiftLeft] = PowerCap(LeftJoySV + vexRT[Btn7UXmtr2]*50 + vexRT[Btn7DXmtr2]*-50);
+	motor[mLiftRight] = PowerCap(LeftJoySV + vexRT[Btn8UXmtr2]*50 + vexRT[Btn8DXmtr2]*-50);
 	//lift is controlled by right bumpers
 }
 
@@ -95,6 +98,30 @@ void Mobile(){//configure mobile goal intake control
 }
 
 void Cone(){//configure claw and chainbar control
+	if(vexRT[Btn6U] == 1){
+		waitUntil(vexRT[Btn6U] == 0);
+		if(rollerIn == false || rollerOut == true){
+			rollerIn = true;
+			rollerOut = false;
+			motor[mClaw] = 70;
+		}
+		else{
+			rollerIn = false;
+			motor[mClaw] = 0;
+		}
+	}
+	if(vexRT[Btn6D] == 1){
+		waitUntil(vexRT[Btn6D] == 0);
+		if(rollerIn == true || rollerOut == false){
+			rollerIn = false;
+			rollerOut = true;
+			motor[mClaw] = -70;
+		}
+		else{
+			rollerOut = false;
+			motor[mClaw] = 0;
+		}
+	}
 	motor[mClaw] = PowerCap(vexRT[Btn6DXmtr2]*-50 + vexRT[Btn6UXmtr2]*50 + vexRT[Btn5UXmtr2]*127 + vexRT[Btn5DXmtr2]*-127);//claw motion is controlled via right d-pad
 	motor[mChainbar] = PowerCap(RightJoySV);
 }
