@@ -9,10 +9,11 @@ int RightJoySH; //Partner Right X
 int coneStack; //How many cones are currently in the stack
 int chainAngle;
 int liftHeight; //Requested angle for lift
-static int liftMobileAngle = 200;
+static int liftMobileAngle = 100;
 
-bool rollerIn;
-bool rollerOut;
+bool rollerIn = false;
+bool rollerOut = false;
+int rollerDirec = 0;
 
 string batteryMain; //String for lcd
 string batteryPowerExpander; //String for lcd
@@ -98,30 +99,19 @@ void Mobile(){//configure mobile goal intake control
 }
 
 void Cone(){//configure claw and chainbar control
-	if(vexRT[Btn6U] == 1){
-		waitUntil(vexRT[Btn6U] == 0);
-		if(rollerIn == false || rollerOut == true){
-			rollerIn = true;
-			rollerOut = false;
-			motor[mClaw] = 70;
-		}
-		else{
-			rollerIn = false;
-			motor[mClaw] = 0;
-		}
+	/*if(vexRT[Btn6DXmtr2] == 1){
+		rollerDirec = -1;
 	}
-	if(vexRT[Btn6D] == 1){
-		waitUntil(vexRT[Btn6D] == 0);
-		if(rollerIn == true || rollerOut == false){
-			rollerIn = false;
-			rollerOut = true;
-			motor[mClaw] = -70;
-		}
-		else{
-			rollerOut = false;
-			motor[mClaw] = 0;
-		}
+
+	if(vexRT[Btn6UXmtr2] == 1){
+		rollerDirec = 1;
 	}
+
+	if(vexRT[Btn5UXmtr2] == 1 || vexRT[Btn5DXmtr2] == 1){
+		rollerDirec = 0;
+	}
+
+	motor[mClaw] = /*PowerCap(rollerDirec * 70);*/
 	motor[mClaw] = PowerCap(vexRT[Btn6DXmtr2]*-50 + vexRT[Btn6UXmtr2]*50 + vexRT[Btn5UXmtr2]*127 + vexRT[Btn5DXmtr2]*-127);//claw motion is controlled via right d-pad
 	motor[mChainbar] = PowerCap(RightJoySV);
 }
