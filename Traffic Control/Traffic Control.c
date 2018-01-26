@@ -113,12 +113,12 @@ void Lift(){//configure lift control
 }
 
 void Mobile(){//configure mobile goal intake control
-	motor[mMobileLeft] = PowerCap(vexRT[Btn6D]*127 + vexRT[Btn5D]*-70+ vexRT[Btn8R]*-127);
-	motor[mMobileRight] = PowerCap(vexRT[Btn6D]*127 + vexRT[Btn5D]*-70+ vexRT[Btn8R]*-127);
+	motor[mMobileLeft] = PowerCap(vexRT[Btn6U]*127 + vexRT[Btn6D]*-70+ vexRT[Btn8D]*-127);
+	motor[mMobileRight] = PowerCap(vexRT[Btn6U]*127 + vexRT[Btn6D]*-70+ vexRT[Btn8D]*-127);
 }
 
 void Cone(){//configure claw and chainbar control
-	motor[mClaw] = PowerCap(vexRT[Btn5UXmtr2]*127 + vexRT[Btn6UXmtr2]*-127);//claw motion is controlled via right d-pad
+	motor[mClaw] = PowerCap(vexRT[Btn6UXmtr2]*127 + vexRT[Btn6DXmtr2]*-127);//claw motion is controlled via right d-pad
 }
 
 void Control() {//consolidate control

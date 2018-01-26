@@ -11,14 +11,18 @@ int chainAngle;
 int liftHeight; //Requested angle for lift
 static int liftMobileAngle = 100;
 
-bool rollerIn = false;
-bool rollerOut = false;
-int rollerDirec = 0;
-
 string batteryMain; //String for lcd
+int batteryMainDoub;
+int autonNumber;
 string batteryPowerExpander; //String for lcd
+string autonString;
+string autonName;
 float basePower = 1.0;
 int baseToggle;
+bool mobileDisable = true;
+bool liftDisable = false;
+bool liftRight = false;
+bool liftLeft = false;
 
 
 int JoyClear(int origVal) { //intake current joystick position
@@ -88,30 +92,50 @@ void Base(){//Configure base control joysticks
 }
 
 void Lift(){//configure lift control
-	motor[mLiftLeft] = PowerCap(LeftJoySV + vexRT[Btn7UXmtr2]*50 + vexRT[Btn7DXmtr2]*-50);
-	motor[mLiftRight] = PowerCap(LeftJoySV + vexRT[Btn8UXmtr2]*50 + vexRT[Btn8DXmtr2]*-50);
+	/*if(SensorValue[gLiftTilt] < -60){
+	liftRight = true;
+	liftLeft = false;
+	}
+	else if(SensorValue[gLiftTilt] > 40){
+	liftLeft = true;
+	liftRight = false;
+	}
+	else{
+	liftLeft = false;
+	liftRight = false;
+	}*/
+	motor[mLiftLeft] = PowerCap(LeftJoySV + vexRT[Btn7UXmtr2]*50 + vexRT[Btn7DXmtr2]*-50 + vexRT[Btn6U]*127*liftDisable + vexRT[Btn6D]*127*liftDisable + liftLeft*-60);
+	motor[mLiftRight] = PowerCap(LeftJoySV + vexRT[Btn8UXmtr2]*50 + vexRT[Btn8DXmtr2]*-50 + vexRT[Btn6U]*127*liftDisable + vexRT[Btn6D]*127*liftDisable + liftRight*-60);
 	//lift is controlled by right bumpers
 }
 
 void Mobile(){//configure mobile goal intake control
-		motor[mMobileLeft] = PowerCap(vexRT[Btn6D]*70 + vexRT[Btn6U]*-127+ vexRT[Btn8U]*127);
-		motor[mMobileRight] = PowerCap(vexRT[Btn6D]*70 + vexRT[Btn6U]*-127+ vexRT[Btn8U]*127);
+	if(SensorValue[gLift2] < liftMobileAngle){
+		mobileDisable = false;
+		liftDisable = true;
+	}
+	else{
+		mobileDisable = true;
+		liftDisable = false;
+	}
+	motor[mMobileLeft] = PowerCap((vexRT[Btn6D]*70*mobileDisable + vexRT[Btn6U]*-127)*mobileDisable + vexRT[Btn7R]*127 + vexRT[Btn7L]*-127 + vexRT[Btn7D]*70);
+	motor[mMobileRight] = PowerCap((vexRT[Btn6D]*70*mobileDisable + vexRT[Btn6U]*-127)*mobileDisable + vexRT[Btn7R]*127 + vexRT[Btn7L]*-127 + vexRT[Btn7D]*70);
 }
 
 void Cone(){//configure claw and chainbar control
 	/*if(vexRT[Btn6DXmtr2] == 1){
-		rollerDirec = -1;
+	rollerDirec = -1;
 	}
 
 	if(vexRT[Btn6UXmtr2] == 1){
-		rollerDirec = 1;
+	rollerDirec = 1;
 	}
 
 	if(vexRT[Btn5UXmtr2] == 1 || vexRT[Btn5DXmtr2] == 1){
-		rollerDirec = 0;
+	rollerDirec = 0;
 	}
 
-	motor[mClaw] = /*PowerCap(rollerDirec * 70);*/
+	motor[mClaw] = PowerCap(rollerDirec * 70);*/
 	motor[mClaw] = PowerCap(vexRT[Btn6DXmtr2]*-50 + vexRT[Btn6UXmtr2]*50 + vexRT[Btn5UXmtr2]*127 + vexRT[Btn5DXmtr2]*-127);//claw motion is controlled via right d-pad
 	motor[mChainbar] = PowerCap(RightJoySV);
 }
@@ -196,6 +220,65 @@ void reset(int sensor){ //intakes number associated with sensor or combination a
 	}
 }
 
+void autonRead(){
+	if(SensorValue[jAuton1] == true){
+		autonNumber += 1;
+	}
+	if(SensorValue[jAuton2] == true){
+		autonNumber += 2;
+	}
+	if(SensorValue[jAuton4] == true){
+		autonNumber += 4;
+	}
+	if(SensorValue[jAuton8] == true){
+		autonNumber += 8;
+	}
+}
+
+void lcd(){
+	batteryMainDoub = nAvgBatteryLevel/100;
+	batteryMain = batteryMainDoub;
+	displayLCDString(0,0,batteryMain);
+	if(nLCDButtons > 0){
+		autonNumber = 0;
+		autonRead();
+		clearLCDLine(1);
+		autonString = autonNumber;
+		displayLCDCenteredString(0, "Auton: ");
+		displayNextLCDString(autonString);
+		switch(autonNumber){
+		case 0:
+			autonName = "disabled";
+			break;
+		case 1:
+			autonName = "Center Station.";
+			break;
+		case 2:
+			autonName = "Side Station.";
+			break;
+		case 3:
+			autonName = "Left Mobile 20";
+			break;
+		case 4:
+			autonName = "Right Mobile 20";
+			break;
+		case 5:
+			autonName = "Left Mobile 10";
+			break;
+		case 6:
+			autonName = "Right Mobile 10";
+			break;
+		case 15:
+			autonName = "Pragma Skills";
+			break;
+		default:
+			autonName = "disabled";
+			break;
+		}
+		displayLCDCenteredString(1, autonName);
+	}
+}
+
 task usercontrol(){
 	motor[port1] = 0;
 	motor[port2] = 0;
@@ -208,18 +291,20 @@ task usercontrol(){
 	motor[port9] = 0;
 	motor[port10] = 0;
 	reset(0);
+	bLCDBacklight = false;
 	//reset motors
 	while(true){
 		Variables(); //configure variables
 		Control();//set control
-		if(vexRT[Btn7U] == 1){
-		SensorValue[gBase1] = 0;
-		SensorValue[gLift2] = 0;
-		SensorValue[gMobile3] = 0;
-		SensorValue[gChainbar4] = 0;
-		SensorValue[qLeftDrive11] = 0;
-		SensorValue[qRightDrive12] = 0;
-		SensorValue[qRollers13] = 0;
+		lcd();
+		if(vexRT[Btn7U] == 1 ||  vexRT[Btn7UXmtr2] == 1){
+			SensorValue[gBase1] = 0;
+			SensorValue[gLift2] = 0;
+			SensorValue[gMobile3] = 0;
+			SensorValue[gChainbar4] = 0;
+			SensorValue[qLeftDrive11] = 0;
+			SensorValue[qRightDrive12] = 0;
+			SensorValue[gLiftTilt] = 0;
 		}
 	}
 }
