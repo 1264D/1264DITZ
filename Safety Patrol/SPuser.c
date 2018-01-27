@@ -104,8 +104,8 @@ void Lift(){//configure lift control
 	liftLeft = false;
 	liftRight = false;
 	}*/
-	motor[mLiftLeft] = PowerCap(LeftJoySV + vexRT[Btn7UXmtr2]*50 + vexRT[Btn7DXmtr2]*-50 + vexRT[Btn6U]*127*liftDisable + vexRT[Btn6D]*127*liftDisable + liftLeft*-60);
-	motor[mLiftRight] = PowerCap(LeftJoySV + vexRT[Btn8UXmtr2]*50 + vexRT[Btn8DXmtr2]*-50 + vexRT[Btn6U]*127*liftDisable + vexRT[Btn6D]*127*liftDisable + liftRight*-60);
+	motor[mLiftLeft] = PowerCap(LeftJoySV + vexRT[Btn7UXmtr2]*50 + vexRT[Btn7DXmtr2]*-50 + liftLeft*-60);
+	motor[mLiftRight] = PowerCap(LeftJoySV + vexRT[Btn8UXmtr2]*50 + vexRT[Btn8DXmtr2]*-50 + liftRight*-60);
 	//lift is controlled by right bumpers
 }
 
@@ -118,8 +118,8 @@ void Mobile(){//configure mobile goal intake control
 		mobileDisable = true;
 		liftDisable = false;
 	}
-	motor[mMobileLeft] = PowerCap((vexRT[Btn6D]*70*mobileDisable + vexRT[Btn6U]*-127)*mobileDisable + vexRT[Btn7R]*127 + vexRT[Btn7L]*-127 + vexRT[Btn7D]*70);
-	motor[mMobileRight] = PowerCap((vexRT[Btn6D]*70*mobileDisable + vexRT[Btn6U]*-127)*mobileDisable + vexRT[Btn7R]*127 + vexRT[Btn7L]*-127 + vexRT[Btn7D]*70);
+	motor[mMobileLeft] = PowerCap((vexRT[Btn6D]*70 + vexRT[Btn6U]*-127) + vexRT[Btn7L]*127 + vexRT[Btn7R]*-127 + vexRT[Btn7D]*70);
+	motor[mMobileRight] = PowerCap((vexRT[Btn6D]*70 + vexRT[Btn6U]*-127) + vexRT[Btn7L]*127 + vexRT[Btn7R]*-127 + vexRT[Btn7D]*70);
 }
 
 void Cone(){//configure claw and chainbar control
@@ -136,7 +136,7 @@ void Cone(){//configure claw and chainbar control
 	}
 
 	motor[mClaw] = PowerCap(rollerDirec * 70);*/
-	motor[mClaw] = PowerCap(vexRT[Btn6DXmtr2]*-50 + vexRT[Btn6UXmtr2]*50 + vexRT[Btn5UXmtr2]*127 + vexRT[Btn5DXmtr2]*-127);//claw motion is controlled via right d-pad
+	motor[mClaw] = PowerCap(vexRT[Btn6DXmtr2]*-80 + vexRT[Btn6UXmtr2]*80);//claw motion is controlled via right d-pad
 	motor[mChainbar] = PowerCap(RightJoySV);
 }
 
