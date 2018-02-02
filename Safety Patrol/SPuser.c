@@ -6,10 +6,10 @@ int LeftJoyMH; //Main Left X
 int LeftJoySH; //Partner Left X
 int RightJoyMH; //Main Right X
 int RightJoySH; //Partner Right X
-int coneStack; //How many cones are currently in the stack
+int coneStack = 0; //How many cones are currently in the stack
 int chainAngle;
 int liftHeight; //Requested angle for lift
-static int liftMobileAngle = 100;
+static int liftMobileAngle = 2400;
 
 string batteryMain; //String for lcd
 int batteryMainDoub;
@@ -21,8 +21,6 @@ float basePower = 1.0;
 int baseToggle;
 bool mobileDisable = true;
 bool liftDisable = false;
-bool liftRight = false;
-bool liftLeft = false;
 
 
 int JoyClear(int origVal) { //intake current joystick position
@@ -62,19 +60,21 @@ void Variables(){
 
 void lDrive(int pwr){//intake power
 	motor[mLeftTop] = pwr;
-	motor[mLeftBottom] = pwr;
+	motor[mLeftFront] = pwr;
+	motor[mLeftBack] = pwr;
 	//Set left motors to a certain power
 }
 
 void rDrive(int pwr){//intake power
 	motor[mRightTop] = pwr;
-	motor[mRightBottom] = pwr;
+	motor[mRightFront] = pwr;
+	motor[mRightBack] = pwr;
 	//Set right motors to a certain power
 }
 
 void Base(){//Configure base control joysticks
-	if(vexRT[Btn8R] == 1){
-		waitUntil(vexRT[Btn8R] == 0);
+	if(vexRT[Btn7U] == 1){
+		waitUntil(vexRT[Btn7U] == 0);
 		if(baseToggle == true){
 			baseToggle = false;
 			basePower = 1.0;
@@ -86,31 +86,16 @@ void Base(){//Configure base control joysticks
 	}
 	lDrive(LeftJoyMV*basePower);//Left wheels are controlled by left joystick
 	rDrive(RightJoyMV*basePower);//Right wheels are controlled by right joystick
-	//lDrive(LeftJoyMV - LeftJoyMV*vexRT[Btn5U]*.5)
-	//rDrive(RightJoyMV - RightJoyMV*vexRT[Btn5U]*.5)
 
 }
 
 void Lift(){//configure lift control
-	/*if(SensorValue[gLiftTilt] < -60){
-	liftRight = true;
-	liftLeft = false;
-	}
-	else if(SensorValue[gLiftTilt] > 40){
-	liftLeft = true;
-	liftRight = false;
-	}
-	else{
-	liftLeft = false;
-	liftRight = false;
-	}*/
-	motor[mLiftLeft] = PowerCap(LeftJoySV + vexRT[Btn7UXmtr2]*50 + vexRT[Btn7DXmtr2]*-50 + liftLeft*-60);
-	motor[mLiftRight] = PowerCap(LeftJoySV + vexRT[Btn8UXmtr2]*50 + vexRT[Btn8DXmtr2]*-50 + liftRight*-60);
+	motor[mLift] = PowerCap(LeftJoySV);
 	//lift is controlled by right bumpers
 }
 
 void Mobile(){//configure mobile goal intake control
-	if(SensorValue[gLift2] < liftMobileAngle){
+	if(SensorValue[pLift2] < liftMobileAngle){
 		mobileDisable = false;
 		liftDisable = true;
 	}
@@ -118,25 +103,11 @@ void Mobile(){//configure mobile goal intake control
 		mobileDisable = true;
 		liftDisable = false;
 	}
-	motor[mMobileLeft] = PowerCap((vexRT[Btn6D]*70 + vexRT[Btn6U]*-127) + vexRT[Btn7L]*127 + vexRT[Btn7R]*-127 + vexRT[Btn7D]*70);
-	motor[mMobileRight] = PowerCap((vexRT[Btn6D]*70 + vexRT[Btn6U]*-127) + vexRT[Btn7L]*127 + vexRT[Btn7R]*-127 + vexRT[Btn7D]*70);
+	motor[mMobile] = PowerCap((vexRT[Btn6D]*70 + vexRT[Btn6U]*-127) + vexRT[Btn7L]*127 + vexRT[Btn7R]*-127 + vexRT[Btn7D]*70);
 }
 
 void Cone(){//configure claw and chainbar control
-	/*if(vexRT[Btn6DXmtr2] == 1){
-	rollerDirec = -1;
-	}
-
-	if(vexRT[Btn6UXmtr2] == 1){
-	rollerDirec = 1;
-	}
-
-	if(vexRT[Btn5UXmtr2] == 1 || vexRT[Btn5DXmtr2] == 1){
-	rollerDirec = 0;
-	}
-
-	motor[mClaw] = PowerCap(rollerDirec * 70);*/
-	motor[mClaw] = PowerCap(vexRT[Btn6DXmtr2]*-80 + vexRT[Btn6UXmtr2]*80);//claw motion is controlled via right d-pad
+	motor[mClaw] = PowerCap(vexRT[Btn6DXmtr2]*-147 + vexRT[Btn6UXmtr2]*107 + 20);//claw motion is controlled via right d-pad
 	motor[mChainbar] = PowerCap(RightJoySV);
 }
 
@@ -147,24 +118,6 @@ void Control() {//consolidate control
 	Cone();
 }
 
-void stack(){//configure lift and chainbar angles based on how many cones are on the stack
-	coneStack++;// add one to stack
-	switch(coneStack){//How many cones are currently on the stack
-	case 1:liftHeight = 0; chainAngle = 0;
-	case 2:liftHeight = 0; chainAngle = 0;
-	case 3:liftHeight = 0; chainAngle = 0;
-	case 4:liftHeight = 0; chainAngle = 0;
-	case 5:liftHeight = 0; chainAngle = 0;
-	case 6:liftHeight = 0; chainAngle = 0;
-	case 7:liftHeight = 0; chainAngle = 0;
-	case 8:liftHeight = 0; chainAngle = 0;
-	case 9:liftHeight = 0; chainAngle = 0;
-	case 10:liftHeight = 0; chainAngle = 0;
-	case 11:liftHeight = 0; chainAngle = 0;
-	case 12:liftHeight = 0; chainAngle = 0;
-	case 13:liftHeight = 0; chainAngle = 0;
-	}
-}
 
 void reset(int sensor){ //intakes number associated with sensor or combination and resets those variables (set to 0)
 	//1 = gBase1
@@ -187,7 +140,6 @@ void reset(int sensor){ //intakes number associated with sensor or combination a
 		SensorValue[gBase1] = 0;
 		break;
 	case 2://DO NOT RESET
-		SensorValue[gLift2] = 0;
 		break;
 	case 3: //DO NOT RESET
 		SensorValue[gMobile3] = 0;
@@ -197,7 +149,6 @@ void reset(int sensor){ //intakes number associated with sensor or combination a
 		break;
 	case 10: //DO NOT RESET
 		SensorValue[gBase1] = 0;
-		SensorValue[gLift2] = 0;
 		SensorValue[gMobile3] = 0;
 		SensorValue[gChainbar4] = 0;
 		break;
@@ -276,35 +227,5 @@ void lcd(){
 			break;
 		}
 		displayLCDCenteredString(1, autonName);
-	}
-}
-
-task usercontrol(){
-	motor[port1] = 0;
-	motor[port2] = 0;
-	motor[port3] = 0;
-	motor[port4] = 0;
-	motor[port5] = 0;
-	motor[port6] = 0;
-	motor[port7] = 0;
-	motor[port8] = 0;
-	motor[port9] = 0;
-	motor[port10] = 0;
-	reset(0);
-	bLCDBacklight = false;
-	//reset motors
-	while(true){
-		Variables(); //configure variables
-		Control();//set control
-		lcd();
-		if(vexRT[Btn7U] == 1 ||  vexRT[Btn7UXmtr2] == 1){
-			SensorValue[gBase1] = 0;
-			SensorValue[gLift2] = 0;
-			SensorValue[gMobile3] = 0;
-			SensorValue[gChainbar4] = 0;
-			SensorValue[qLeftDrive11] = 0;
-			SensorValue[qRightDrive12] = 0;
-			SensorValue[gLiftTilt] = 0;
-		}
 	}
 }
