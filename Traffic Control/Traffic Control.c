@@ -107,18 +107,18 @@ void Base(){//Configure base control joysticks
 }
 
 void Lift(){//configure lift control
-	motor[mLiftLeft] = PowerCap(LeftJoySV);
-	motor[mLiftRight] = PowerCap(LeftJoySV);
+	motor[mLiftLeft] = PowerCap(vexRT[Btn5U]*127 + vexRT[Btn5D]*-127+ vexRT[Btn7U]*70 + vexRT[Btn7D]*-70);
+	motor[mLiftRight] = PowerCap(vexRT[Btn5U]*127 + vexRT[Btn5D]*-127+ vexRT[Btn7U]*70 +  vexRT[Btn7D]*-70);
 	//lift is controlled by right bumpers
 }
 
 void Mobile(){//configure mobile goal intake control
-	motor[mMobileLeft] = PowerCap(vexRT[Btn6U]*127 + vexRT[Btn6D]*-70+ vexRT[Btn8D]*-127);
-	motor[mMobileRight] = PowerCap(vexRT[Btn6U]*127 + vexRT[Btn6D]*-70+ vexRT[Btn8D]*-127);
+	motor[mMobileLeft] = PowerCap(vexRT[Btn8U]*127 + vexRT[Btn8D]*-70+ vexRT[Btn8R]*-127);
+	motor[mMobileRight] = PowerCap(vexRT[Btn8U]*127 + vexRT[Btn8D]*-70+ vexRT[Btn8R]*-127);
 }
 
 void Cone(){//configure claw and chainbar control
-	motor[mClaw] = PowerCap(vexRT[Btn6UXmtr2]*127 + vexRT[Btn6DXmtr2]*-127);//claw motion is controlled via right d-pad
+	motor[mClaw] = PowerCap(vexRT[Btn6U]*-127 + vexRT[Btn6D]*127);//claw motion is controlled via right d-pad
 }
 
 void Control() {//consolidate control
