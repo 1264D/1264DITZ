@@ -327,7 +327,7 @@ int loadAngle = 215;
 int potDown = 2600;
 int potUp = 4095;
 int stackAngs[14] = {130, 165, 200, 235, 285, 335, 385, 435, 475, 510, 565, 655, 700, 700};
-
+/*
 void autoLoads(int num) {
 	while(vexRT[Btn8U] == 1){
 		waitUntil(vexRT[Btn8U] != 1);
@@ -389,7 +389,7 @@ void autoLoads(int num) {
 		motor[mClaw] = 20;
 	}
 }
-
+*/
 void auton1(){ //stationary
 	motor[mClaw] = 20;
 	dr4b(127,250);
@@ -629,7 +629,7 @@ void autonSelecter(){
 	case 6:
 		auton6();
 		break;
-	case 15: //Skills
+	case 7: //Skills
 		pragmaSkills();
 		break;
 	default:
