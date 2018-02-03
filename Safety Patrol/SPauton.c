@@ -75,6 +75,10 @@ void mobile(int pwr, int angle){ //0 in, -900 out,
 }
 
 void dr4b(int pwr, int angle){
+	//2260 = lift all Down
+	//2500 = Mobile Goal Clear
+	//3020 = Stat. clear
+	//2870 = On stat.
 	if(angle > SensorValue[pLift2]){
 		liftDir = 1;
 	}
@@ -390,19 +394,22 @@ void autoLoads(int num) {
 	}
 }
 */
+
+
 void auton1(){ //stationary
 	motor[mClaw] = 20;
-	dr4b(127,250);
+	dr4b(127,3020);
 	motor[mChainbar] = 50;
 	drive(75,450);
 	//PIDmove(60,600);
-	dr4b(100,225);
+	dr4b(100,2870);
 	motor[mClaw] = -127;
-	dr4b(60,300);
+	wait1Msec(400);
+	dr4b(60,3080);
 	motor[mClaw] = 0;
 	motor[mChainbar] = 0;
 	drive(70,-300);
-	dr4b(100,100);
+	dr4b(100,2500);
 	//lift up
 	//drive forward
 	//drop lift
@@ -414,19 +421,19 @@ void auton1(){ //stationary
 
 void auton2(){ //stationary
 	motor[mClaw] = 20;
-	wait1Msec(3500);
-	dr4b(127,250);
+	dr4b(127,3020);
 	motor[mChainbar] = 50;
 	drive(75,650);
 	//PIDmove(60,600);
 	wait1Msec(250);
-	dr4b(100,225);
+	dr4b(100,2870);
 	motor[mClaw] = -127;
-	dr4b(60,300);
+	wait1Msec(400);
+	dr4b(60,3080);
 	motor[mClaw] = 0;
 	motor[mChainbar] = 0;
 	drive(70,-300);
-	dr4b(100,100);
+	dr4b(100,2500);
 	//lift up
 	//drive forward
 	//drop lift
@@ -435,14 +442,17 @@ void auton2(){ //stationary
 	//stop rollers
 	//back up
 }
-
+//2260 = lift all Down
+//2500 = Mobile Goal Clear
+//3020 = Stat. clear
+//2870 = On stat.
 void auton3(){ //Mobile left 20
 	motor[mClaw] = 20;
 	mobile(127,-900);
 	driveMobile(127, 1500);
 	//PIDmoveMobile(127,x);
 	mobile(127,-20);
-	dr4b(127,50);
+	dr4b(127,2260);
 	motor[mClaw] = -127;
 	drive(127, (-lastDis + 150));
 	motor[mClaw] = 0;
@@ -456,7 +466,7 @@ void auton3(){ //Mobile left 20
 	drive(127,-200);
 	driveTime(127,775,2750);
 	//PIDmove(127,x);
-	dr4b(127,200);
+	dr4b(127,2575);
 	mobile(127,-1050);
 	mobile(127, -100);
 	lDrive(-127);
@@ -484,7 +494,7 @@ void auton4(){ //mobile right 20
 	driveMobile(127, 1500);
 	//PIDmoveMobile(127,x);
 	mobile(127,-20);
-	dr4b(127,50);
+	dr4b(127,2260);
 	motor[mClaw] = -127;
 	drive(127, (-lastDis + 150));
 	motor[mClaw] = 0;
@@ -498,7 +508,7 @@ void auton4(){ //mobile right 20
 	drive(127,-200);
 	driveTime(127,700, 3000);
 	//PIDmove(127,x);
-	dr4b(127,200);
+	dr4b(127,2575);
 	mobile(127,-1050);
 	mobile(127, -100);
 	lDrive(-127);
@@ -525,7 +535,7 @@ void auton5(){
 	driveMobile(127, 1500);
 	//PIDmoveMobile(127,x);
 	mobile(127,-20);
-	dr4b(127,50);
+	dr4b(127,2260);
 	motor[mClaw] = -127;
 	drive(127, (-lastDis + 150));
 	motor[mClaw] = 0;
@@ -549,7 +559,7 @@ void auton6(){
 	driveMobile(127, 1500);
 	//PIDmoveMobile(127,x);
 	mobile(127,-20);
-	dr4b(127,50);
+	dr4b(127,2260);
 	motor[mClaw] = -127;
 	drive(127, (-lastDis + 150));
 	motor[mClaw] = 0;
@@ -572,7 +582,7 @@ void pragmaSkills(){ //Programming Skills
 	driveMobile(127, 1500);
 	//PIDmoveMobile(127,x);
 	mobile(127,-20);
-	dr4b(127,50);
+	dr4b(127,2260);
 	motor[mClaw] = -120;
 	drive(127, (-lastDis + 150));
 	motor[mClaw] = 0;
@@ -581,12 +591,12 @@ void pragmaSkills(){ //Programming Skills
 	mobile(127,-900);
 	drive(127,-200);
 	turnG(85, 1000);
-	dr4b(127, 400);
+	dr4b(127, 3000);
 	driveTime(127,-750, 1000);
 	mobile(127, -50);
 	mobile(127, -900);
 	drive(127, 400);
-	dr4b(127,300);
+	dr4b(127,2500);
 	turnG(70, 130);
 	driveMobile(100, 700);
 	mobile(127, -50);
@@ -682,7 +692,7 @@ task usercontrol(){
 		Variables(); //configure variables
 		Control();//set control
 		lcd();
-		autoLoads(coneStack);
+		//autoLoads(coneStack);
 		if(vexRT[Btn7U] == 1 ||  vexRT[Btn7UXmtr2] == 1){
 			SensorValue[gBase1] = 0;
 			SensorValue[gMobile3] = 0;
