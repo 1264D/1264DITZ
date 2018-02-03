@@ -112,7 +112,7 @@ void Lift(){//configure lift control
 }
 
 void OneDriverLift(){//For Clarkston - Left bumpers, 7L does half power
-	motor[mLift] = PowerCap((vexRT[Btn5D]*127 + vexRT[Btn5U]*-127) * (1 - 0.5*vexRT[Btn7L]) );
+	motor[mLift] = PowerCap((vexRT[Btn5D]*-127 + vexRT[Btn5U]*127) * (1 - 0.5*vexRT[Btn7L]) );
 	//lift is controlled by left bumpers
 }
 

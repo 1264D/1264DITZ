@@ -14,7 +14,7 @@
 #pragma config(Sensor, dgtl9,  qRightDrive12,  sensorQuadEncoder)
 #pragma config(Sensor, dgtl11, qLeftDrive11,   sensorQuadEncoder)
 #pragma config(Motor,  port1,           mClaw,         tmotorVex393_HBridge, openLoop, reversed)
-#pragma config(Motor,  port2,           mLift,         tmotorVex393_MC29, openLoop)
+#pragma config(Motor,  port2,           mLift,         tmotorVex393_MC29, openLoop, reversed)
 #pragma config(Motor,  port3,           mRightTop,     tmotorVex393HighSpeed_MC29, openLoop, reversed)
 #pragma config(Motor,  port4,           mRightBack,    tmotorVex393HighSpeed_MC29, openLoop)
 #pragma config(Motor,  port5,           mRightFront,   tmotorVex393HighSpeed_MC29, openLoop)
@@ -395,7 +395,10 @@ void autoLoads(int num) {
 }
 */
 
-
+//2260 = lift all Down
+//2500 = Mobile Goal Clear
+//3020 = Stat. clear
+//2870 = On stat.
 void auton1(){ //stationary
 	motor[mClaw] = 20;
 	dr4b(127,3020);
