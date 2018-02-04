@@ -7,8 +7,6 @@ int LeftJoySH; //Partner Left X
 int RightJoyMH; //Main Right X
 int RightJoySH; //Partner Right X
 int coneStack = 0; //How many cones are currently in the stack
-int chainAngle;
-int liftHeight; //Requested angle for lift
 static int liftMobileAngle = 2400;
 
 string batteryMain; //String for lcd
@@ -89,6 +87,28 @@ void Base(){//Configure base control joysticks
 
 }
 
+void Lift(){//configure lift control
+	motor[mLift] = PowerCap(LeftJoySV);
+	//lift is controlled by right bumpers
+}
+
+void Mobile(){//configure mobile goal intake control
+	if(SensorValue[pLift2] < liftMobileAngle){
+		mobileDisable = false;
+		liftDisable = true;
+	}
+	else{
+		mobileDisable = true;
+		liftDisable = false;
+	}
+	motor[mMobile] = PowerCap((vexRT[Btn6D]*70 + vexRT[Btn6U]*-127 + vexRT[Btn6D]*57*SensorValue[jAuton1]*SensorValue[jAuton2]*SensorValue[jAuton4]*SensorValue[jAuton8]) + vexRT[Btn7L]*127 + vexRT[Btn7R]*-127 + vexRT[Btn7D]*70);
+}
+
+void Cone(){//configure claw and chainbar control
+	motor[mClaw] = PowerCap(vexRT[Btn6DXmtr2]*-147 + vexRT[Btn6UXmtr2]*107 + 20);//claw motion is controlled via right d-pad
+	motor[mChainbar] = PowerCap(RightJoySV);
+}
+
 void OneDriverBase(){//For Clarkston - main joysticks, 8L is half-power toggle
 	if(vexRT[Btn8L] == 1){
 		waitUntil(vexRT[Btn8L] == 0);
@@ -103,38 +123,11 @@ void OneDriverBase(){//For Clarkston - main joysticks, 8L is half-power toggle
 	}
 	lDrive(LeftJoyMV*basePower);//Left wheels are controlled by left joystick
 	rDrive(RightJoyMV*basePower);//Right wheels are controlled by right joystick
-
-}
-
-void Lift(){//configure lift control
-	motor[mLift] = PowerCap(LeftJoySV);
-	//lift is controlled by right bumpers
 }
 
 void OneDriverLift(){//For Clarkston - Left bumpers, 7L does half power
 	motor[mLift] = PowerCap((vexRT[Btn5D]*-127 + vexRT[Btn5U]*127) * (1 - 0.5*vexRT[Btn7L]) );
 	//lift is controlled by left bumpers
-}
-
-void Mobile(){//configure mobile goal intake control
-	if(SensorValue[pLift2] < liftMobileAngle){
-		mobileDisable = false;
-		liftDisable = true;
-	}
-	else{
-		mobileDisable = true;
-		liftDisable = false;
-	}
-	motor[mMobile] = PowerCap((vexRT[Btn6D]*70 + vexRT[Btn6U]*-127) + vexRT[Btn7L]*127 + vexRT[Btn7R]*-127 + vexRT[Btn7D]*70);
-}
-
-void OneDriverMobile(){//For Clarkston - Mobile Goal Intake Control
-	motor[mMobile] = PowerCap(vexRT[Btn6D]*70 + vexRT[Btn6U]*-127 + vexRT[Btn8R]*127);
-}
-
-void Cone(){//configure claw and chainbar control
-	motor[mClaw] = PowerCap(vexRT[Btn6DXmtr2]*-147 + vexRT[Btn6UXmtr2]*107 + 20);//claw motion is controlled via right d-pad
-	motor[mChainbar] = PowerCap(RightJoySV);
 }
 
 void OneDriverCone(){//For Clarkston - Roller & 4-bar Control
@@ -143,17 +136,22 @@ void OneDriverCone(){//For Clarkston - Roller & 4-bar Control
 }
 
 void Control() {//consolidate control
-	if(SensorValue[jAuton8] == false){
-		Mobile();
-		Base();
-		Lift();
-		Cone();
-	} else {
-		OneDriverMobile();
-		OneDriverLift();
-		OneDriverBase();
-		OneDriverCone();
+	/*if(SensorValue[jAuton8] == false){
+	Mobile();
+	Base();
+	Lift();
+	Cone();
 	}
+	else {
+	OneDriverMobile();
+	OneDriverLift();
+	OneDriverBase();
+	OneDriverCone();
+	} */
+	Mobile();
+	Base();
+	Lift();
+	Cone();
 }
 
 
@@ -177,18 +175,12 @@ void reset(int sensor){ //intakes number associated with sensor or combination a
 	case 1:
 		SensorValue[gBase1] = 0;
 		break;
-	case 2://DO NOT RESET
-		break;
 	case 3: //DO NOT RESET
 		SensorValue[gMobile3] = 0;
 		break;
-	case 4: //DO NOT RESET
-		SensorValue[gChainbar4] = 0;
-		break;
-	case 10: //DO NOT RESET
+	case 4:
 		SensorValue[gBase1] = 0;
 		SensorValue[gMobile3] = 0;
-		SensorValue[gChainbar4] = 0;
 		break;
 	case 11:
 		SensorValue[qLeftDrive11] = 0;
@@ -196,13 +188,9 @@ void reset(int sensor){ //intakes number associated with sensor or combination a
 	case 12:
 		SensorValue[qRightDrive12] = 0;
 		break;
-	case 13:
-		SensorValue[qRollers13] = 0;
-		break;
-	case 36:
+	case 23:
 		SensorValue[qLeftDrive11] = 0;
 		SensorValue[qRightDrive12] = 0;
-		SensorValue[qRollers13] = 0;
 		break;
 	default:
 		break;
@@ -219,9 +207,9 @@ void autonRead(){
 	if(SensorValue[jAuton4] == true){
 		autonNumber += 4;
 	}
-//	if(SensorValue[jAuton8] == true){
-//		autonNumber += 8;
-//	}
+	//	if(SensorValue[jAuton8] == true){
+	//		autonNumber += 8;
+	//	}
 }
 
 void lcd(){

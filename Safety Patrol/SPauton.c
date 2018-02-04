@@ -3,14 +3,12 @@
 #pragma config(Sensor, in1,    gBase1,         sensorGyro)
 #pragma config(Sensor, in2,    pLift2,         sensorPotentiometer)
 #pragma config(Sensor, in3,    gMobile3,       sensorGyro)
-#pragma config(Sensor, in4,    gChainbar4,     sensorNone)
+#pragma config(Sensor, in4,    p4Bar,          sensorPotentiometer)
 #pragma config(Sensor, in5,    lMobile,        sensorLineFollower)
-#pragma config(Sensor, in7,    p4Bar,          sensorPotentiometer)
 #pragma config(Sensor, dgtl1,  jAuton1,        sensorTouch)
 #pragma config(Sensor, dgtl2,  jAuton2,        sensorTouch)
 #pragma config(Sensor, dgtl3,  jAuton4,        sensorTouch)
 #pragma config(Sensor, dgtl4,  jAuton8,        sensorTouch)
-#pragma config(Sensor, dgtl7,  qRollers13,     sensorQuadEncoder)
 #pragma config(Sensor, dgtl9,  qRightDrive12,  sensorQuadEncoder)
 #pragma config(Sensor, dgtl11, qLeftDrive11,   sensorQuadEncoder)
 #pragma config(Motor,  port1,           mClaw,         tmotorVex393_HBridge, openLoop, reversed)
@@ -75,10 +73,6 @@ void mobile(int pwr, int angle){ //0 in, -900 out,
 }
 
 void dr4b(int pwr, int angle){
-	//2260 = lift all Down
-	//2500 = Mobile Goal Clear
-	//3020 = Stat. clear
-	//2870 = On stat.
 	if(angle > SensorValue[pLift2]){
 		liftDir = 1;
 	}
@@ -92,13 +86,13 @@ void dr4b(int pwr, int angle){
 }
 
 void chainbar(int angle){
-	if(angle > SensorValue[gChainbar4]){
+	if(angle > SensorValue[p4Bar]){
 		chainbarDir = 1;
 	}
 	else{
 		chainbarDir = -1;
 	}
-	while((chainbarDir == 1 && SensorValue[gChainbar4] <= angle) || (chainbarDir == -1 && SensorValue[gChainbar4] >= angle)){
+	while((chainbarDir == 1 && SensorValue[p4Bar] <= angle) || (chainbarDir == -1 && SensorValue[p4Bar] >= angle)){
 		motor[mChainbar] = 127*chainbarDir;
 	}
 	motor[mChainbar] = 0;
@@ -331,7 +325,7 @@ int loadAngle = 215;
 int potDown = 2600;
 int potUp = 4095;
 int stackAngs[14] = {130, 165, 200, 235, 285, 335, 385, 435, 475, 510, 565, 655, 700, 700};
-/*
+
 void autoLoads(int num) {
 	while(vexRT[Btn8U] == 1){
 		waitUntil(vexRT[Btn8U] != 1);
@@ -393,7 +387,6 @@ void autoLoads(int num) {
 		motor[mClaw] = 20;
 	}
 }
-*/
 
 //2260 = lift all Down
 //2500 = Mobile Goal Clear
@@ -445,10 +438,7 @@ void auton2(){ //stationary
 	//stop rollers
 	//back up
 }
-//2260 = lift all Down
-//2500 = Mobile Goal Clear
-//3020 = Stat. clear
-//2870 = On stat.
+
 void auton3(){ //Mobile left 20
 	motor[mClaw] = 20;
 	mobile(127,-900);
@@ -642,7 +632,7 @@ void autonSelecter(){
 	case 6:
 		auton6();
 		break;
-	case 7: //Skills
+	case 15: //Skills
 		pragmaSkills();
 		break;
 	default:
@@ -656,22 +646,14 @@ void autonSelecter(){
 	//Mobile Right 10: 1 Cone, 4 Cone
 	//Programming skills
 
-
-
-
-
 void pre_auton(){
 	bStopTasksBetweenModes = true;
-	//SensorType[gLift2] = sensorNone;
-	//wait1Msec(1000);
-	//sensorType[in8] = sensorGyro;
-	//wait1Msec(2000);
 }
 
 task autonomous(){
 	autonNumber = 0;
-	reset(36);
-	reset(10);
+	reset(23);
+	reset(4);
 	autonRead();
 	autonSelecter();
 }
@@ -695,11 +677,10 @@ task usercontrol(){
 		Variables(); //configure variables
 		Control();//set control
 		lcd();
-		//autoLoads(coneStack);
+		autoLoads(coneStack);
 		if(vexRT[Btn7U] == 1 ||  vexRT[Btn7UXmtr2] == 1){
 			SensorValue[gBase1] = 0;
 			SensorValue[gMobile3] = 0;
-			SensorValue[gChainbar4] = 0;
 			SensorValue[qLeftDrive11] = 0;
 			SensorValue[qRightDrive12] = 0;
 			//SensorValue[gLiftTilt] = 0;
