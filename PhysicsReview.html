@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<head>
+    <link href="https://fonts.googleapis.com/css?family=Alegreya|Bubblegum+Sans|Merriweather+Sans|Rammetto+One" rel="stylesheet">
+    <style>
+    h1, h2 {
+        font-family: 'Bubblegum Sans', sans-serif;
+    }
+    
+    h3 {
+        font-family: 'Merriweather Sans', sans-serif;
+    }
+   
+    p {
+        font-family: Alegrya, serif;
+        color: Black;
+    }
+      
+    .infobox {
+        outline: 4px groove SlateGray;
+        width: 40%;
+        padding: 10px;
+        margin-bottom: 2em;
+        background-color: beige;
+    }
+     
+    .questionbox {
+        outline: 4px groove SlateGray;
+        width: 40%;
+        padding: 10px;
+        margin-bottom: 2em;
+        background-color: LightSteelBlue;
+    }
+        
+    body {
+        background: linear-gradient(to right,PaleGoldenrod, PaleGreen);
+    }
+    </style>
+    
+</head>
+
+    
+    <body>
+<h1> Welcome to 17.4 and 17.5 Review!</h1>
+    <hr>
+<h2>17.4 - Electron Volt</h2>
+<p class="first">The electron volt (eV) is a measure of energy, equal to 1.6 x 10<sup>-19</sup> joules.<br> It is based on the amount of energy an electron acquires by passing through an electric potential of 1 volt.<p>
+    <div class="infobox">
+        <p>To find the energy of a particle that traveled over an electric potential, you use the formula:</p>
+        <p style="font-family: 'Merrweather Sans', sans-serif;">C x V = Q</p>
+        <p>Where:</p>
+            <ul>
+                <li>C is the charge of the particle, as a multiple of the charge of an electron (1.6 x 10<sup>-19</sup> coulombs)</li>
+                <li>V is the potential difference across which the particle travels, in volts</li>
+                <li>Q is the energy the partcle gains, in electron volts</li>
+            </ul>     
+    </div>
+    <div class="questionbox">
+        <h3>Practice Question 1</h3>
+        <p>If a particle with charge of 3.5 times an electron passes through an electric potential difference of 0.8 volts, how much energy is gained by the particle?</p>
+        <form id="q1">
+          <input type="radio" name="question1" value="wrong" id="q1c1">
+          <label for="q1c1">3.5 eV</label><br>
+          <input type="radio" name="question1" value="correct" id="q1c2">
+          <label for="q1c2">2.8 eV</label><br>
+          <input type="radio" name="question1" value="wrong" id="q1c3">
+          <label for="q1c3">4.3 eV</label><br>
+          <input type="radio" name="question1" value="wrong" id="q1c4">
+          <label for="q1c4">4.0 eV</label><br>
+            <button type="button" onClick="checkQ1()">Check Answer</button>  
+        </form>
+        <p id="Q1answer"></p>
+    </div>    
+        
+<iframe src="https://phet.colorado.edu/sims/html/charges-and-fields/latest/charges-and-fields_en.html" width="800" height="600" scrolling="no" allowfullscreen></iframe>
+        <p>A wonderful PhET simulation on electric field. See more at <a href="https://phet.colorado.edu/">their website</a></p>
+
+</body>
+
+<script>
+  function checkQ1() {
+    var answerField = document.getElementById('Q1answer');
+    var answerList = document.forms["q1"];
+    for(var i = 0; i < answerList.length; i++){
+      if(answerList[i].checked)
+        answerField.innerHTML = "Your answer is " + answerList[i].value;
+    }
+  }
+</script>
+
