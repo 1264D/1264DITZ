@@ -7,7 +7,8 @@ int LeftJoySH; //Partner Left X
 int RightJoyMH; //Main Right X
 int RightJoySH; //Partner Right X
 int coneStack = 0; //How many cones are currently in the stack
-static int liftMobileAngle = 2400;
+static int liftMobileAngle = 2300;
+int rollerPassive = 30;
 
 string batteryMain; //String for lcd
 int batteryMainDoub;
@@ -88,7 +89,7 @@ void Base(){//Configure base control joysticks
 }
 
 void Lift(){//configure lift control
-	motor[mLift] = PowerCap(LeftJoySV);
+	motor[mLift] = PowerCap(LeftJoySV + vexRT[Btn6D]*127*liftDisable + vexRT[Btn6U]*127*liftDisable);
 	//lift is controlled by right bumpers
 }
 
@@ -101,11 +102,11 @@ void Mobile(){//configure mobile goal intake control
 		mobileDisable = true;
 		liftDisable = false;
 	}
-	motor[mMobile] = PowerCap((vexRT[Btn6D]*70 + vexRT[Btn6U]*-127 + vexRT[Btn6D]*57*SensorValue[jAuton1]*SensorValue[jAuton2]*SensorValue[jAuton4]*SensorValue[jAuton8]) + vexRT[Btn7L]*127 + vexRT[Btn7R]*-127 + vexRT[Btn7D]*70);
+	motor[mMobile] = PowerCap((vexRT[Btn6D]*70*mobileDisable + vexRT[Btn6U]*-127*mobileDisable + vexRT[Btn6D]*57*SensorValue[jAuton1]*SensorValue[jAuton2]*SensorValue[jAuton4]*SensorValue[jAuton8]) + vexRT[Btn7L]*127 + vexRT[Btn7R]*-127 + vexRT[Btn7D]*70);
 }
 
 void Cone(){//configure claw and chainbar control
-	motor[mClaw] = PowerCap(vexRT[Btn6DXmtr2]*-147 + vexRT[Btn6UXmtr2]*107 + 20);//claw motion is controlled via right d-pad
+	motor[mClaw] = PowerCap(vexRT[Btn6DXmtr2]*-157 + vexRT[Btn6UXmtr2]*107 + rollerPassive);//claw motion is controlled via right d-pad
 	motor[mChainbar] = PowerCap(RightJoySV);
 }
 
@@ -131,7 +132,7 @@ void OneDriverLift(){//For Clarkston - Left bumpers, 7L does half power
 }
 
 void OneDriverCone(){//For Clarkston - Roller & 4-bar Control
-	motor[mClaw] = PowerCap(vexRT[Btn7D]*-147 + vexRT[Btn7U]*107 + 20);//claw motion is controlled via left d-pad, idles at 20 power in
+	motor[mClaw] = PowerCap(vexRT[Btn7D]*-157 + vexRT[Btn7U]*107 + RollerPassive);//claw motion is controlled via left d-pad, idles at 20 power in
 	motor[mChainbar] = PowerCap(vexRT[Btn8U]*127 + vexRT[Btn8D]*-127); //Chainbar by left bumpers, U->up, D->down
 }
 
