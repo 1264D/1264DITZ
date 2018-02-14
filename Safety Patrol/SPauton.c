@@ -278,7 +278,7 @@ void PIDturnG(float pwr, int angle){
 	 wait1Msec(20);
 	}
 
-
+//https://www.vexforum.com/index.php/6465-a-pid-controller-in-robotc/0
 	/*
 	if(angle < 0){
 		turnDir = -1;
