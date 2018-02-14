@@ -8,7 +8,7 @@ int RightJoyMH; //Main Right X
 int RightJoySH; //Partner Right X
 int coneStack = 0; //How many cones are currently in the stack
 static int liftMobileAngle = 2300;
-int rollerPassive = 30;
+int rollerPassive = 20;
 
 string batteryMain; //String for lcd
 int batteryMainDoub;
@@ -110,45 +110,7 @@ void Cone(){//configure claw and chainbar control
 	motor[mChainbar] = PowerCap(RightJoySV);
 }
 
-void OneDriverBase(){//For Clarkston - main joysticks, 8L is half-power toggle
-	if(vexRT[Btn8L] == 1){
-		waitUntil(vexRT[Btn8L] == 0);
-		if(baseToggle == true){
-			baseToggle = false;
-			basePower = 1.0;
-		}
-		else{
-			baseToggle = true;
-			basePower = 0.5;
-		}
-	}
-	lDrive(LeftJoyMV*basePower);//Left wheels are controlled by left joystick
-	rDrive(RightJoyMV*basePower);//Right wheels are controlled by right joystick
-}
-
-void OneDriverLift(){//For Clarkston - Left bumpers, 7L does half power
-	motor[mLift] = PowerCap((vexRT[Btn5D]*-127 + vexRT[Btn5U]*127) * (1 - 0.5*vexRT[Btn7L]) );
-	//lift is controlled by left bumpers
-}
-
-void OneDriverCone(){//For Clarkston - Roller & 4-bar Control
-	motor[mClaw] = PowerCap(vexRT[Btn7D]*-157 + vexRT[Btn7U]*107 + RollerPassive);//claw motion is controlled via left d-pad, idles at 20 power in
-	motor[mChainbar] = PowerCap(vexRT[Btn8U]*127 + vexRT[Btn8D]*-127); //Chainbar by left bumpers, U->up, D->down
-}
-
 void Control() {//consolidate control
-	/*if(SensorValue[jAuton8] == false){
-	Mobile();
-	Base();
-	Lift();
-	Cone();
-	}
-	else {
-	OneDriverMobile();
-	OneDriverLift();
-	OneDriverBase();
-	OneDriverCone();
-	} */
 	Mobile();
 	Base();
 	Lift();
@@ -208,9 +170,9 @@ void autonRead(){
 	if(SensorValue[jAuton4] == true){
 		autonNumber += 4;
 	}
-	//	if(SensorValue[jAuton8] == true){
-	//		autonNumber += 8;
-	//	}
+		if(SensorValue[jAuton8] == true){
+			autonNumber += 8;
+		}
 }
 
 void lcd(){
