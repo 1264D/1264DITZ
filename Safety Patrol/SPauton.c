@@ -257,7 +257,31 @@ void PIDmoveMobile(int pwr,int dis){
 	lastDis = SensorValue[qLeftDrive11];
 }
 
-void PIDturnG(int pwr, int angle){
+float gkP = 0.25;
+float gkI = 0;
+float gKd = 0;
+float gPower = 0;
+//gyro-based PID turning
+void PIDturnG(float pwr, int angle){
+	int gIntegral = 0;
+	int gDerivative = 0;
+	int prevError = angle - SensorValue[gBase1];
+	while(abs(angle - SensorValue[gBase1]) >= 15){
+		int error = angle - SensorValue[gBase1];
+		if(error == 0 || sign(error*angle) == -1)
+			integral = 0;
+		if(integral > 75000)
+			integral = 0;
+	 gDerivative = error - prevError;
+	 prevError = error;
+	 gPower =  pwr * (gkP * error + gkI * gIntegral +  gkD * gDerivative);
+	 lDrive(-PowerCap((int)gPower));
+	 rDrive(PowerCap((int)gPower));
+	 wait1Msec(20);
+	}
+
+//https://www.vexforum.com/index.php/6465-a-pid-controller-in-robotc/0
+	/*
 	if(angle < 0){
 		turnDir = -1;
 	}
@@ -287,7 +311,7 @@ void PIDturnG(int pwr, int angle){
 	motDiff = 0;
 	oldQuadValue = 0;
 	motDiff = 0;
-	reset(0);
+	reset(0);*/
 }
 
 void PIDturnQ(int pwr, int dis){
@@ -661,6 +685,10 @@ void pragmaSkills(){ //Programming Skills
 }
 
 void autonTest(){
+//power, angle
+	PIDturnG(1, 900);
+	wait1Msec(1500);
+	PIDturnG(1, -450);
 }
 
 void autonSelecter(){
@@ -693,7 +721,8 @@ void autonSelecter(){
 		mobileRight5();
 		break;
 	case 9:
-		trickStationLeft();
+		//auton9();
+		autonTest();
 		break;
 	case 10:
 		trickStationRight();
