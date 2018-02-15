@@ -257,28 +257,43 @@ void PIDmoveMobile(int pwr,int dis){
 	lastDis = SensorValue[qLeftDrive11];
 }
 
-float gkP = 0.25;
-float gkI = 0;
-float gKd = 0;
-float gPower = 0;
+float gkP = 0.35;
+float gkI = 0.08;
+float gkD = 0.007;
+float gPower = 30;
+float lastPower[10] = {0,0,0,0,0,0,0,0,0,0};
+int lastAngle[3] = {0,0,0};
 //gyro-based PID turning
 void PIDturnG(float pwr, int angle){
 	int gIntegral = 0;
 	int gDerivative = 0;
 	int prevError = angle - SensorValue[gBase1];
-	while(abs(angle - SensorValue[gBase1]) >= 15){
+	while(!(abs(angle - lastAngle[2]) <= 5 && abs(angle - SensorValue[gBase1]) <= 5) && lastPower[9] != gPower){
 		int error = angle - SensorValue[gBase1];
-		if(error == 0 || sign(error*angle) == -1)
-			integral = 0;
-		if(integral > 75000)
-			integral = 0;
+		if(error == 0 || sgn(error*angle) == -1)
+			gIntegral = 0;
+		if(gIntegral > 75000)
+			gIntegral = 0;
 	 gDerivative = error - prevError;
 	 prevError = error;
 	 gPower =  pwr * (gkP * error + gkI * gIntegral +  gkD * gDerivative);
+	 //if(abs(gPower) < 33 && abs(gPower) > 0) gPower = sgn(gPower)*33;
 	 lDrive(-PowerCap((int)gPower));
 	 rDrive(PowerCap((int)gPower));
+	 for(int p = 8; p >= 0; p--){
+	 		lastPower[p+1] = lastPower[p];
+	 }
+	 for(int a = 1; a >= 0; a--){
+	 		lastAngle[a+1] = lastAngle[a];
+	 }
+	 lastPower[0] = gPower;
+	 lastAngle[0] = SensorValue[gBase1];
 	 wait1Msec(20);
 	}
+	lDrive(0);
+	rDrive(0);
+	reset(0);
+	gPower = 30;
 
 //https://www.vexforum.com/index.php/6465-a-pid-controller-in-robotc/0
 	/*
@@ -685,10 +700,7 @@ void pragmaSkills(){ //Programming Skills
 }
 
 void autonTest(){
-//power, angle
-	PIDturnG(1, 900);
-	wait1Msec(1500);
-	PIDturnG(1, -450);
+	PIDturnG(1, 450);
 }
 
 void autonSelecter(){
