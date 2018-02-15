@@ -107,7 +107,11 @@ void Mobile(){//configure mobile goal intake control
 
 void Cone(){//configure claw and chainbar control
 	motor[mClaw] = PowerCap(vexRT[Btn6DXmtr2]*-157 + vexRT[Btn6UXmtr2]*107 + rollerPassive);//claw motion is controlled via right d-pad
-	motor[mChainbar] = PowerCap(RightJoySV);
+	if(abs(SensorValue[p4Bar] - 4BARDOWNVALUE /*replace me*/) <= 40 && RightJoySV <= 120){
+		motor[mChainbar] = -60;
+	} else {
+		motor[mChainbar] = PowerCap(RightJoySV);
+	}
 }
 
 void Control() {//consolidate control
