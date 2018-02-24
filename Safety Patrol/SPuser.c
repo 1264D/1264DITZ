@@ -7,8 +7,8 @@ int LeftJoySH; //Partner Left X
 int RightJoyMH; //Main Right X
 int RightJoySH; //Partner Right X
 int coneStack = 0; //How many cones are currently in the stack
-static int liftMobileAngle = 2300;
-int rollerPassive = 20;
+static int liftMobileAngle = 2400;
+int rollerPassive = 30;
 
 string batteryMain; //String for lcd
 int batteryMainDoub;
@@ -18,6 +18,7 @@ string autonString;
 string autonName;
 float basePower = 1.0;
 int baseToggle;
+int barBurnout;
 bool mobileDisable = true;
 bool liftDisable = false;
 
@@ -85,7 +86,6 @@ void Base(){//Configure base control joysticks
 	}
 	lDrive(LeftJoyMV*basePower);//Left wheels are controlled by left joystick
 	rDrive(RightJoyMV*basePower);//Right wheels are controlled by right joystick
-
 }
 
 void Lift(){//configure lift control
@@ -106,12 +106,14 @@ void Mobile(){//configure mobile goal intake control
 }
 
 void Cone(){//configure claw and chainbar control
-	motor[mClaw] = PowerCap(vexRT[Btn6DXmtr2]*-157 + vexRT[Btn6UXmtr2]*107 + rollerPassive);//claw motion is controlled via right d-pad
-	if(abs(SensorValue[p4Bar] - 4BARDOWNVALUE /*replace me*/) <= 40 && RightJoySV <= 120){
-		motor[mChainbar] = -60;
-	} else {
-		motor[mChainbar] = PowerCap(RightJoySV);
+	motor[mClaw] = PowerCap(vexRT[Btn6DXmtr2]*-157 + vexRT[Btn6UXmtr2]*97 + rollerPassive);//claw motion is controlled via right d-pad
+	if(RightJoySV <= -50 && SensorValue[p4Bar] <= 1650 && SensorValue[p4Bar] >= 1400 ){
+		barBurnout = 1;
 	}
+	else{
+		barBurnout = 0;
+	}
+	motor[mChainbar] = PowerCap(RightJoySV + 70*barBurnout);
 }
 
 void Control() {//consolidate control
@@ -130,7 +132,6 @@ void reset(int sensor){ //intakes number associated with sensor or combination a
 	//10 = Gyros
 	//11 = qLeftDrive
 	//12 = qRightDrive
-	//13 = qRollers
 	//36 = Quadratures
 	//0 = All Sensors
 	switch(sensor){
@@ -174,9 +175,12 @@ void autonRead(){
 	if(SensorValue[jAuton4] == true){
 		autonNumber += 4;
 	}
-		if(SensorValue[jAuton8] == true){
-			autonNumber += 8;
-		}
+	if(SensorValue[jAuton8] == true){
+		autonNumber += 8;
+	}
+	if(SensorValue[jAuton16] == true){
+		autonNumber += 16;
+	}
 }
 
 void lcd(){
@@ -191,34 +195,97 @@ void lcd(){
 		displayLCDCenteredString(0, "Auton: ");
 		displayNextLCDString(autonString);
 		switch(autonNumber){
-		case 0:
-			autonName = "disabled";
-			break;
-		case 1:
-			autonName = "Center Station.";
-			break;
-		case 2:
-			autonName = "Side Station.";
-			break;
-		case 3:
-			autonName = "Left Mobile 20";
-			break;
-		case 4:
-			autonName = "Right Mobile 20";
-			break;
-		case 5:
-			autonName = "Left Mobile 10";
-			break;
-		case 6:
-			autonName = "Right Mobile 10";
-			break;
-		case 7:
-			autonName = "Pragma Skills";
-			break;
-		default:
-			autonName = "disabled";
-			break;
-		}
+	case 0: //test
+		autonName = "Test Autonomous";
+		break;
+	case 2: //mogo 20 left 3
+		autonName = "20P Left 3C";
+		break;
+	case 3: //trick 20 left 3
+		autonName = "Tr 20P Left 3C";
+		break;
+	case 4: //mogo 20 right 3
+		autonName = "20P Right 3C";
+		break;
+	case 5://trick 20 right 3
+		autonName = "Tr 20P Right 3C";
+		break;
+	case 6://mogo 10 left 3
+		autonName = "10P Left 3C";
+		break;
+	case 7://trick 10 left 3
+		autonName = "Tr 10P Left 3C";
+		break;
+	case 8://mogo 10 right 3
+		autonName = "10P Right 3C";
+		break;
+	case 9://trick 10 right 3
+		autonName = "Tr 10P Right 3C";
+		break;
+	case 10://mogo 5 left 3
+		autonName = "5P Left 3C";
+		break;
+	case 11://trick 5 left 3
+		autonName = "Tr 5P Left 3C";
+		break;
+	case 12://mogo 5 right 3
+		autonName = "5P Right 3C";
+		break;
+	case 13://trick 5 right 3
+		autonName = "Tr 5P Right 3C";
+		break;
+	case 14://stationary left
+		autonName = "Station Left";
+		break;
+	case 15: //trick stationary left
+		autonName = "Tr Station Left";
+		break;
+	case 16: //stationary right
+		autonName = "Station Right";
+		break;
+	case 17: //trick stationary right
+		autonName = "Tr Station Right";
+		break;
+	case 18: //mogo 20 left 2
+		autonName = "20P Left 2C";
+		break;
+	case 19: //trick 20 left 2
+		autonName = "Tr 20P Left 2C";
+		break;
+	case 20: //mogo 20 right 2
+		autonName = "20P Right 2C";
+		break;
+	case 21: //trick 20 right 2
+		autonName = "Tr 20P Right 2C";
+		break;
+	case 22: //mogo 10 left 2
+		autonName = "10P Left 2C";
+		break;
+	case 23: //trick 10 left 2
+		autonName = "Tr 10P Left 2C";
+		break;
+	case 24: //mogo 10 right 2
+		autonName = "10P Right 2C";
+		break;
+	case 25: //trick 10 right 2
+		autonName = "Tr 10P Right 2C";
+		break;
+	case 26: //mogo 5 left 2
+		autonName = "5P Left 2C";
+		break;
+	case 27: //trick 5 left 2
+		autonName = "Tr 5P Left 2C";
+		break;
+	case 28: //mogo 5 right 2
+		autonName = "5P Right 2C";
+		break;
+	case 29: //trick 5 right 2
+		autonName = "Tr 5P Right 2C";
+		break;
+	case 31: //pragma skills
+		autonName = "Pragma Skills";
+		break;
+	}
 		displayLCDCenteredString(1, autonName);
 	}
 }
