@@ -371,13 +371,13 @@ void autoLoads(int num) {
 //2870 = On stat.
 
 void stationLeft(){ //long stationary left
-	motor[mClaw] = rollerPassive;
+	motor[mClaw] = 127;
 	motor[mChainbar] = -127;
 	wait1Msec(500);
 	motor[mChainbar] = 0;
+	motor[mClaw] = rollerPassive;
 	dr4b(127,3300);
-	drive(90,400);
-	//PIDmove(60,600);
+	drive(90,350);
 	dr4b(127,2800);
 	motor[mClaw] = -127;
 	wait1Msec(100);
@@ -399,13 +399,13 @@ void stationLeft(){ //long stationary left
 }
 
 void stationRight(){ //long stationary right
-	motor[mClaw] = rollerPassive;
+	motor[mClaw] = 127;
 	motor[mChainbar] = -127;
 	wait1Msec(500);
 	motor[mChainbar] = 0;
+	motor[mClaw] = rollerPassive;
 	dr4b(127,3300);
-	drive(85,325);
-	//PIDmove(60,600);
+	drive(85,350);
 	dr4b(127,2800);
 	motor[mClaw] = -127;
 	wait1Msec(100);
@@ -427,18 +427,19 @@ void stationRight(){ //long stationary right
 }
 
 void threeCone(){
-	motor[mClaw] = rollerPassive;
+	motor[mClaw] = 127;
 	mobile(127,-900);
+	motor[mClaw] = rollerPassive;
 	driveMobile(127, 1500);
 	mobile(127,-50);
-	dr4b(100,2200);
+	dr4b(100,2300);
 	motor[mClaw] = -127;
 	wait1Msec(400);
 	motor[mClaw] = 0;
 	drive(90, 195);
 	motor[mClaw] = 127;
 	motor[mChainbar] = -127;
-	dr4b(127,2150);
+	dr4b(127,2300);
 	motor[mLift] = -127;
 	wait1Msec(400);
 	lDrive(-30);
@@ -451,9 +452,33 @@ void threeCone(){
 	rDrive(0);
 	dr4b(100,2300);
 	motor[mChainbar] = 127;
-	wait1Msec(500);
+	wait1Msec(750);
 	motor[mChainbar] = 0;
 	dr4b(100,2275);
+	wait1Msec(200);
+	motor[mClaw] = -127;
+	wait1Msec(400);
+
+	drive(90, 135);
+	dr4b(127, 2350);
+	motor[mChainbar] = -127;
+	motor[mClaw] = 127;
+	dr4b(127,2250);
+	motor[mLift] = -127;
+	wait1Msec(400);
+	lDrive(-30);
+	rDrive(-30);
+	wait1Msec(300);
+	motor[mClaw] = 50;
+	motor[mChainbar] = 0;
+	motor[mLift] = 0;
+	lDrive(0);
+	rDrive(0);
+	dr4b(100,2400);
+	motor[mChainbar] = 127;
+	wait1Msec(750);
+	motor[mChainbar] = 0;
+	dr4b(100,2300);
 	wait1Msec(200);
 	motor[mClaw] = -127;
 	wait1Msec(400);
@@ -461,7 +486,7 @@ void threeCone(){
 
 void mobile20Left3(){ //Mobile left 20
 	threeCone();
-	drive(127, -1300);
+	drive(127, -1400);
 	motor[mClaw] = 0;
 	PIDturnG(0.5,450);
 	drive(85,-450);
@@ -487,7 +512,7 @@ void mobile20Left3(){ //Mobile left 20
 
 void mobile20Right3(){ //mobile right 20
 	threeCone();
-	drive(127, -1200);
+	drive(127, -1300);
 	motor[mClaw] = 0;
 	PIDturnG(0.5,1400);
 	drive(85,450);
@@ -512,7 +537,7 @@ void mobile20Right3(){ //mobile right 20
 
 void mobile10Left3(){
 	threeCone();
-	drive(127, -1300);
+	drive(127, -1400);
 	motor[mClaw] = 0;
 	PIDturnG(0.5, 1500);
 	driveTime(75,100, 750);
@@ -531,7 +556,7 @@ void mobile10Left3(){
 
 void mobile10Right3(){
 	threeCone();
-	drive(127, -1000);
+	drive(127, -1100);
 	motor[mClaw] = 0;
 	PIDturnG(0.5, 2250);
 	driveTime(75,100, 750);
@@ -719,7 +744,7 @@ void mobile5Left2(){
 	drive(127, -1100);
 	motor[mClaw] = 0;
 	PIDturnG(0.5, 1350);
-	drive(90, -150);
+	drive(90, -100);
 	dr4b(127,2500);
 	mobile(127,-900);
 	drive(127,-1500);
@@ -739,7 +764,7 @@ void mobile5Right2(){
 	drive(127, -1100);
 	motor[mClaw] = 0;
 	PIDturnG(0.5, 2250);
-	drive(90, -150);
+	drive(90, -100);
 	mobile(127,-900);
 	drive(127,-1500);
 	PIDturnG(0.5, -900);
@@ -754,78 +779,136 @@ void mobile5Right2(){
 }
 
 void trickStationLeft(){
-	PIDturnG(0.5, 900);
-	stationLeft();
+	motor[mClaw] = 127;
+	PIDturnG(0.5, -800);
+
+	motor[mClaw] = 127;
+	motor[mChainbar] = -127;
+	wait1Msec(500);
+	motor[mChainbar] = 0;
+	motor[mClaw] = rollerPassive;
+	dr4b(127,3300);
+	drive(90,220);
+	dr4b(127,2800);
+	motor[mClaw] = -127;
+	wait1Msec(100);
+	dr4b(127,3000);
+	motor[mClaw] = 0;
+	drive(85,-50);
+	dr4b(127,2500);
+	turnG(100,-925);
+	driveTime(127,-2200,4000);
 }
 
 void trickStationRight(){
-	PIDturnG(0.5, -900);
-	stationRight();
+	motor[mClaw] = 127;
+	PIDturnG(0.5, 800);
+
+	motor[mClaw] = 127;
+	motor[mChainbar] = -127;
+	wait1Msec(500);
+	motor[mChainbar] = 0;
+	motor[mClaw] = rollerPassive;
+	dr4b(127,3300);
+	drive(85,220);
+	dr4b(127,2800);
+	motor[mClaw] = -127;
+	wait1Msec(100);
+	dr4b(127,3000);
+	motor[mClaw] = 0;
+	drive(85,-50);
+	dr4b(127,2500);
+	turnG(100,830);
+	driveTime(127,-2200, 4000);
 }
 
 void trickMobile20Left3(){
+	motor[mClaw] = 127;
+	drive(75,50);
 	PIDturnG(0.5, 900);
 	mobile20Left3();
 }
 
 void trickMobile20Right3(){
+	motor[mClaw] = 127;
+	drive(75,50);
 	PIDturnG(0.5, -900);
 	mobile20Right3();
 }
 
 void trickMobile10Left3(){
+	motor[mClaw] = 127;
+	drive(75,50);
 	PIDturnG(0.5, 900);
 	mobile10Left3();
 }
 
 void trickMobile10Right3(){
+	motor[mClaw] = 127;
+	drive(75,50);
 	PIDturnG(0.5, -900);
 	mobile10Right3();
 }
 
 void trickMobile5Left3(){
+	motor[mClaw] = 127;
+	drive(75,50);
 	PIDturnG(0.5, 900);
 	mobile5Left3();
 }
 
 void trickMobile5Right3(){
+	motor[mClaw] = 127;
+	drive(75,50);
 	PIDturnG(0.5, -900);
 	mobile5Right3();
 }
 
 void trickMobile20Left2(){
-	PIDturnG(0.5, 900);
+	motor[mClaw] = 127;
+	drive(75,50);
+	PIDturnG(0.75, 900);
 	mobile20Left2();
 }
 
 void trickMobile20Right2(){
-	PIDturnG(0.5, -900);
+	motor[mClaw] = 127;
+	drive(75,50);
+	PIDturnG(0.75, -900);
 	mobile20Right2();
 }
 
 void trickMobile10Left2(){
-	PIDturnG(0.5, 900);
+	motor[mClaw] = 127;
+	drive(75,50);
+	PIDturnG(0.75, 900);
 	mobile10Left2();
 }
 
 void trickMobile10Right2(){
-	PIDturnG(0.5, -900);
+	motor[mClaw] = 127;
+	PIDturnG(0.75, -900);
 	mobile10Right2();
 }
 
 void trickMobile5Left2(){
-	PIDturnG(0.5, 900);
+	motor[mClaw] = 127;
+	drive(75,50);
+	PIDturnG(0.75, 900);
 	mobile5Left2();
 }
 
 void trickMobile5Right2(){
-	PIDturnG(0.5, 900);
+	motor[mClaw] = 127;
+	drive(75,50);
+	PIDturnG(0.75, -900);
 	mobile5Right2();
 }
 
 void pragmaSkills(){ //Programming Skills
-	motor[mClaw] = rollerPassive;
+	motor[mClaw] = 127;
 	mobile(127,-900);
+	motor[mClaw] = rollerPassive;
 	driveMobile(127, 1500);
 	mobile(127,-50);
 	dr4b(127,2200);
@@ -880,6 +963,61 @@ void pragmaSkills(){ //Programming Skills
 }
 
 void autonTest(){
+	motor[mClaw] = 127;
+	mobile(127,-900);
+	motor[mClaw] = rollerPassive;
+	driveMobile(127, 1500);
+	mobile(127,-50);
+	dr4b(100,2300);
+	motor[mClaw] = -127;
+	wait1Msec(400);
+	motor[mClaw] = 0;
+	drive(90, 195);
+	motor[mClaw] = 127;
+	motor[mChainbar] = -127;
+	dr4b(127,2300);
+	motor[mLift] = -127;
+	wait1Msec(400);
+	lDrive(-30);
+	rDrive(-30);
+	wait1Msec(300);
+	motor[mClaw] = 50;
+	motor[mChainbar] = 0;
+	motor[mLift] = 0;
+	lDrive(0);
+	rDrive(0);
+	dr4b(100,2300);
+	motor[mChainbar] = 127;
+	wait1Msec(750);
+	motor[mChainbar] = 0;
+	dr4b(100,2275);
+	wait1Msec(200);
+	motor[mClaw] = -127;
+	wait1Msec(400);
+
+	drive(90, 135);
+	dr4b(127, 2350);
+	motor[mChainbar] = -127;
+	motor[mClaw] = 127;
+	dr4b(127,2250);
+	motor[mLift] = -127;
+	wait1Msec(400);
+	lDrive(-30);
+	rDrive(-30);
+	wait1Msec(300);
+	motor[mClaw] = 50;
+	motor[mChainbar] = 0;
+	motor[mLift] = 0;
+	lDrive(0);
+	rDrive(0);
+	dr4b(100,2400);
+	motor[mChainbar] = 127;
+	wait1Msec(750);
+	motor[mChainbar] = 0;
+	dr4b(100,2300);
+	wait1Msec(200);
+	motor[mClaw] = -127;
+	wait1Msec(400);
 }
 
 void autonSelecter(){
