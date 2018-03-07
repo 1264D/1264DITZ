@@ -10,14 +10,10 @@ int coneStack = 0; //How many cones are currently in the stack
 static int liftMobileAngle = 2500;
 int rollerPassive = 25;
 
-string batteryMain; //String for lcd
-int batteryMainDoub;
+string mainBattery, backupBattery, powerBattery; //String for lcd
 int autonNumber;
-string batteryPowerExpander; //String for lcd
 string autonString;
 string autonName;
-float basePower = 1.0;
-int baseToggle;
 int barBurnout;
 bool mobileDisable = true;
 bool liftDisable = false;
@@ -173,9 +169,20 @@ void autonRead(){
 }
 
 void lcd(){
-	batteryMainDoub = nAvgBatteryLevel/100;
-	batteryMain = batteryMainDoub;
-	displayLCDString(0,0,batteryMain);
+	clearLCDLine(0);
+	clearLCDLine(1);
+	displayLCDString(0, 0, "M:");
+	sprintf(mainBattery, "%1.2f%c", nImmediateBatteryLevel/1000.0,'V');
+	displayNextLCDString(mainBattery);
+
+	displayNextLCDString(",PE:");
+	sprintf(powerBattery, "%1.2f%c", SensorValue[PowerExpander]/280.0,'V');
+	displayNextLCDString(powerBattery);
+
+	displayLCDString(1, 0, "Backup: ");
+	sprintf(backupBattery, "%1.2f%c", BackupBatteryLevel/1000.0, 'V');
+	displayNextLCDString(backupBattery);
+
 	if(nLCDButtons > 0){
 		autonNumber = 0;
 		autonRead();
@@ -276,5 +283,6 @@ void lcd(){
 			break;
 		}
 		displayLCDCenteredString(1, autonName);
+		waitUntil(nLCDButtons == 0);
 	}
 }

@@ -5,6 +5,7 @@
 #pragma config(Sensor, in3,    gMobile3,       sensorGyro)
 #pragma config(Sensor, in5,    lMobile,        sensorLineFollower)
 #pragma config(Sensor, in7,    p4Bar,          sensorPotentiometer)
+#pragma config(Sensor, in8,    PowerExpander,  sensorAnalog)
 #pragma config(Sensor, dgtl1,  jAuton1,        sensorTouch)
 #pragma config(Sensor, dgtl2,  jAuton2,        sensorTouch)
 #pragma config(Sensor, dgtl3,  jAuton4,        sensorTouch)
