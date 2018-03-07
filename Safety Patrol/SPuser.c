@@ -7,8 +7,8 @@ int LeftJoySH; //Partner Left X
 int RightJoyMH; //Main Right X
 int RightJoySH; //Partner Right X
 int coneStack = 0; //How many cones are currently in the stack
-static int liftMobileAngle = 2400;
-int rollerPassive = 30;
+static int liftMobileAngle = 2500;
+int rollerPassive = 25;
 
 string batteryMain; //String for lcd
 int batteryMainDoub;
@@ -73,19 +73,8 @@ void rDrive(int pwr){//intake power
 }
 
 void Base(){//Configure base control joysticks
-	if(vexRT[Btn7U] == 1){
-		waitUntil(vexRT[Btn7U] == 0);
-		if(baseToggle == true){
-			baseToggle = false;
-			basePower = 1.0;
-		}
-		else{
-			baseToggle = true;
-			basePower = 0.5;
-		}
-	}
-	lDrive(LeftJoyMV*basePower);//Left wheels are controlled by left joystick
-	rDrive(RightJoyMV*basePower);//Right wheels are controlled by right joystick
+	lDrive(LeftJoyMV + RightJoyMH);//Left wheels are controlled by left joystick
+	rDrive(LeftJoyMV - RightJoyMH);//Right wheels are controlled by right joystick
 }
 
 void Lift(){//configure lift control
@@ -102,7 +91,7 @@ void Mobile(){//configure mobile goal intake control
 		mobileDisable = true;
 		liftDisable = false;
 	}
-	motor[mMobile] = PowerCap((vexRT[Btn6D]*70*mobileDisable + vexRT[Btn6U]*-127*mobileDisable + vexRT[Btn6D]*57*SensorValue[jAuton1]*SensorValue[jAuton2]*SensorValue[jAuton4]*SensorValue[jAuton8]) + vexRT[Btn7L]*127 + vexRT[Btn7R]*-127 + vexRT[Btn7D]*70);
+	motor[mMobile] = PowerCap((vexRT[Btn6D]*70*mobileDisable + vexRT[Btn6U]*-127*mobileDisable + vexRT[Btn6D]*57*SensorValue[jAuton1]*SensorValue[jAuton2]*SensorValue[jAuton4]*SensorValue[jAuton8]*SensorValue[jAuton16]) + vexRT[Btn7L]*127 + vexRT[Btn7R]*-127 + vexRT[Btn7D]*70);
 }
 
 void Cone(){//configure claw and chainbar control
@@ -195,97 +184,97 @@ void lcd(){
 		displayLCDCenteredString(0, "Auton: ");
 		displayNextLCDString(autonString);
 		switch(autonNumber){
-	case 0: //test
-		autonName = "Test Autonomous";
-		break;
-	case 2: //mogo 20 left 3
-		autonName = "20P Left 3C";
-		break;
-	case 3: //trick 20 left 3
-		autonName = "Tr 20P Left 3C";
-		break;
-	case 4: //mogo 20 right 3
-		autonName = "20P Right 3C";
-		break;
-	case 5://trick 20 right 3
-		autonName = "Tr 20P Right 3C";
-		break;
-	case 6://mogo 10 left 3
-		autonName = "10P Left 3C";
-		break;
-	case 7://trick 10 left 3
-		autonName = "Tr 10P Left 3C";
-		break;
-	case 8://mogo 10 right 3
-		autonName = "10P Right 3C";
-		break;
-	case 9://trick 10 right 3
-		autonName = "Tr 10P Right 3C";
-		break;
-	case 10://mogo 5 left 3
-		autonName = "5P Left 3C";
-		break;
-	case 11://trick 5 left 3
-		autonName = "Tr 5P Left 3C";
-		break;
-	case 12://mogo 5 right 3
-		autonName = "5P Right 3C";
-		break;
-	case 13://trick 5 right 3
-		autonName = "Tr 5P Right 3C";
-		break;
-	case 14://stationary left
-		autonName = "Station Left";
-		break;
-	case 15: //trick stationary left
-		autonName = "Tr Station Left";
-		break;
-	case 16: //stationary right
-		autonName = "Station Right";
-		break;
-	case 17: //trick stationary right
-		autonName = "Tr Station Right";
-		break;
-	case 18: //mogo 20 left 2
-		autonName = "20P Left 2C";
-		break;
-	case 19: //trick 20 left 2
-		autonName = "Tr 20P Left 2C";
-		break;
-	case 20: //mogo 20 right 2
-		autonName = "20P Right 2C";
-		break;
-	case 21: //trick 20 right 2
-		autonName = "Tr 20P Right 2C";
-		break;
-	case 22: //mogo 10 left 2
-		autonName = "10P Left 2C";
-		break;
-	case 23: //trick 10 left 2
-		autonName = "Tr 10P Left 2C";
-		break;
-	case 24: //mogo 10 right 2
-		autonName = "10P Right 2C";
-		break;
-	case 25: //trick 10 right 2
-		autonName = "Tr 10P Right 2C";
-		break;
-	case 26: //mogo 5 left 2
-		autonName = "5P Left 2C";
-		break;
-	case 27: //trick 5 left 2
-		autonName = "Tr 5P Left 2C";
-		break;
-	case 28: //mogo 5 right 2
-		autonName = "5P Right 2C";
-		break;
-	case 29: //trick 5 right 2
-		autonName = "Tr 5P Right 2C";
-		break;
-	case 31: //pragma skills
-		autonName = "Pragma Skills";
-		break;
-	}
+		case 0: //test
+			autonName = "Test Autonomous";
+			break;
+		case 2: //mogo 20 left 3
+			autonName = "20P Left 3C";
+			break;
+		case 3: //trick 20 left 3
+			autonName = "Tr 20P Left 3C";
+			break;
+		case 4: //mogo 20 right 3
+			autonName = "20P Right 3C";
+			break;
+		case 5://trick 20 right 3
+			autonName = "Tr 20P Right 3C";
+			break;
+		case 6://mogo 10 left 3
+			autonName = "10P Left 3C";
+			break;
+		case 7://trick 10 left 3
+			autonName = "Tr 10P Left 3C";
+			break;
+		case 8://mogo 10 right 3
+			autonName = "10P Right 3C";
+			break;
+		case 9://trick 10 right 3
+			autonName = "Tr 10P Right 3C";
+			break;
+		case 10://mogo 5 left 3
+			autonName = "5P Left 3C";
+			break;
+		case 11://trick 5 left 3
+			autonName = "Tr 5P Left 3C";
+			break;
+		case 12://mogo 5 right 3
+			autonName = "5P Right 3C";
+			break;
+		case 13://trick 5 right 3
+			autonName = "Tr 5P Right 3C";
+			break;
+		case 14://stationary left
+			autonName = "Station Left";
+			break;
+		case 15: //trick stationary left
+			autonName = "Tr Station Left";
+			break;
+		case 16: //stationary right
+			autonName = "Station Right";
+			break;
+		case 17: //trick stationary right
+			autonName = "Tr Station Right";
+			break;
+		case 18: //mogo 20 left 2
+			autonName = "20P Left 2C";
+			break;
+		case 19: //trick 20 left 2
+			autonName = "Tr 20P Left 2C";
+			break;
+		case 20: //mogo 20 right 2
+			autonName = "20P Right 2C";
+			break;
+		case 21: //trick 20 right 2
+			autonName = "Tr 20P Right 2C";
+			break;
+		case 22: //mogo 10 left 2
+			autonName = "10P Left 2C";
+			break;
+		case 23: //trick 10 left 2
+			autonName = "Tr 10P Left 2C";
+			break;
+		case 24: //mogo 10 right 2
+			autonName = "10P Right 2C";
+			break;
+		case 25: //trick 10 right 2
+			autonName = "Tr 10P Right 2C";
+			break;
+		case 26: //mogo 5 left 2
+			autonName = "5P Left 2C";
+			break;
+		case 27: //trick 5 left 2
+			autonName = "Tr 5P Left 2C";
+			break;
+		case 28: //mogo 5 right 2
+			autonName = "5P Right 2C";
+			break;
+		case 29: //trick 5 right 2
+			autonName = "Tr 5P Right 2C";
+			break;
+		case 31: //pragma skills
+			autonName = "Pragma Skills";
+			break;
+		}
 		displayLCDCenteredString(1, autonName);
 	}
 }
