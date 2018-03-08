@@ -55,22 +55,30 @@ void Variables(){
 }
 
 void lDrive(int pwr){//intake power
-	motor[mLeftTop] = pwr;
-	motor[mLeftFront] = pwr;
-	motor[mLeftBack] = pwr;
+	motor[mLeftTop] = PowerCap(pwr);
+	motor[mLeftFront] = PowerCap(pwr);
+	motor[mLeftBack] = PowerCap(pwr);
 	//Set left motors to a certain power
 }
 
 void rDrive(int pwr){//intake power
-	motor[mRightTop] = pwr;
-	motor[mRightFront] = pwr;
-	motor[mRightBack] = pwr;
+	motor[mRightTop] = PowerCap(pwr);
+	motor[mRightFront] = PowerCap(pwr);
+	motor[mRightBack] = PowerCap(pwr);
 	//Set right motors to a certain power
 }
 
 void Base(){//Configure base control joysticks
-	lDrive(LeftJoyMV + RightJoyMH);//Left wheels are controlled by left joystick
-	rDrive(LeftJoyMV - RightJoyMH);//Right wheels are controlled by right joystick
+/*	lDrive(LeftJoyMV + RightJoyMH);//Left wheels are controlled by left joystick
+	rDrive(LeftJoyMV - RightJoyMH);//Right wheels are controlled by right joystick*/
+	if(LeftJoyMV != 0 && RightJoyMV != 0){
+    lDrive(LeftJoyMV);
+    rDrive(RightJoyMV);
+} else {
+    lDrive(LeftJoyMV + RightJoyMV + (LeftJoyMH + RightJoyMH));
+    rDrive(LeftJoyMV + RightJoyMV - (LeftJoyMH + RightJoyMH));
+
+}
 }
 
 void Lift(){//configure lift control
