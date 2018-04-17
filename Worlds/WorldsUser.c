@@ -6,8 +6,7 @@ int LeftJoyMH; //Main Left X
 int LeftJoySH; //Partner Left X
 int RightJoyMH; //Main Right X
 int RightJoySH; //Partner Right X
-int coneStack = 0; //How many cones are currently in the stack
-static int liftMobileAngle = 2350;
+static int liftMobileAngle = 3100;
 int rollerPassive = 25;
 
 string mainBattery, backupBattery, powerBattery; //String for lcd
@@ -17,7 +16,6 @@ string autonName;
 int barBurnout;
 bool mobileDisable = true;
 bool liftDisable = false;
-
 
 int JoyClear(int origVal) { //intake current joystick position
 	if(abs(origVal) < 15){ // if joystick is close to still just return 0
@@ -55,14 +53,14 @@ void Variables(){
 }
 
 void lDrive(int pwr){//intake power
-	motor[mLeftTop] = PowerCap(pwr);
+	motor[mLeftMiddle] = PowerCap(pwr);
 	motor[mLeftFront] = PowerCap(pwr);
 	motor[mLeftBack] = PowerCap(pwr);
 	//Set left motors to a certain power
 }
 
 void rDrive(int pwr){//intake power
-	motor[mRightTop] = PowerCap(pwr);
+	motor[mRightMiddle] = PowerCap(pwr);
 	motor[mRightFront] = PowerCap(pwr);
 	motor[mRightBack] = PowerCap(pwr);
 	//Set right motors to a certain power
@@ -85,7 +83,7 @@ void Lift(){//configure lift control
 }
 
 void Mobile(){//configure mobile goal intake control
-	if(SensorValue[pLift2] < liftMobileAngle){
+	if(SensorValue[pLift2] > liftMobileAngle){
 		mobileDisable = false;
 		liftDisable = true;
 	}
@@ -97,14 +95,14 @@ void Mobile(){//configure mobile goal intake control
 }
 
 void Cone(){//configure claw and chainbar control
-	motor[mClaw] = PowerCap(vexRT[Btn6DXmtr2]*-157 + vexRT[Btn6UXmtr2]*97 + rollerPassive);//claw motion is controlled via right d-pad
-	if(RightJoySV <= -50 && SensorValue[p4Bar] <= 1650 && SensorValue[p4Bar] >= 1400 ){
+	motor[mRollers] = PowerCap(vexRT[Btn6DXmtr2]*-157 + vexRT[Btn6UXmtr2]*97 + rollerPassive);//claw motion is controlled via right d-pad
+	if(RightJoySV <= -50 && SensorValue[p4Bar] >= 1200 && SensorValue[p4Bar] <= 1600 ){
 		barBurnout = 1;
 	}
 	else{
 		barBurnout = 0;
 	}
-	motor[mChainbar] = PowerCap(RightJoySV + 70*barBurnout);
+	motor[m4Bar] = PowerCap(RightJoySV + 70*barBurnout);
 }
 
 void Control() {//consolidate control
@@ -171,6 +169,9 @@ void autonRead(){
 	}
 	if(SensorValue[jAuton16] == true){
 		autonNumber += 16;
+	}
+	if(SensorValue[jAuton32] == true){
+		autonNumber += 32;
 	}
 }
 
@@ -290,5 +291,26 @@ void lcd(){
 		}
 		displayLCDCenteredString(1, autonName);
 		waitUntil(nLCDButtons == 0);
+	}
+}
+
+task usercontrol(){
+	motor[port1] = 0;
+	motor[port2] = 0;
+	motor[port3] = 0;
+	motor[port4] = 0;
+	motor[port5] = 0;
+	motor[port6] = 0;
+	motor[port7] = 0;
+	motor[port8] = 0;
+	motor[port9] = 0;
+	motor[port10] = 0;
+	reset(0);
+	bLCDBacklight = false;
+	//reset motors
+	while(true){
+		Variables(); //configure variables
+		Control();//set control
+		lcd();
 	}
 }

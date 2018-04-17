@@ -1,3 +1,4 @@
+
 #pragma config(UART_Usage, UART1, uartVEXLCD, baudRate19200, IOPins, None, None)
 #pragma config(UART_Usage, UART2, uartNotUsed, baudRate4800, IOPins, None, None)
 #pragma config(Sensor, in1,    gBase1,         sensorGyro)
@@ -185,7 +186,6 @@ void driveMobile(int pwr, int dis){
 	rDrive(0);
 	lastDis = SensorValue[qLeftDrive11];
 	reset(0);
-
 }
 
 void PIDmove(int pwr, int dis){
@@ -256,8 +256,8 @@ void PIDmoveMobile(int pwr,int dis){
 	lastDis = SensorValue[qLeftDrive11];
 }
 
-float gkP = 0.35;
-float gkI = 0.08;
+float gkP = 0.37;
+float gkI = 0.1;
 float gkD = 0.007;
 float gPower = 30;
 float lastPower[10] = {0,0,0,0,0,0,0,0,0,0};
@@ -272,7 +272,7 @@ void PIDturnG(float pwr, int angle){
 		if(error == 0 || sgn(error*angle) == -1){
 			gIntegral = 0;
 		}
-		if(gIntegral > 75000){
+		if(gIntegral > 150000){
 			gIntegral = 0;
 		}
 		gDerivative = error - prevError;
@@ -744,17 +744,17 @@ void mobile20Left2(){ //Mobile left 20
 	rDrive(0);
 	dr4b(100,2300);
 	motor[mChainbar] = 127;
-	drive(127, -1300);
+
+	drive(127, -1000);
 	motor[mChainbar] = 0;
 	dr4b(100,2300);
 	motor[mClaw] = -127;
-	PIDturnG(0.5,450);
-	drive(85,-450);
+	PIDturnG(0.7,450);
+	drive(85,-550);
 	motor[mClaw] = 0;
-	PIDturnG(0.5,900);
-	drive(127,-200);
-	driveTime(127,900,2750);
-	mobile(127,-900);
+	PIDturnG(0.7,900);
+	driveTime(127,900,2650);
+	mobile(127, -900);
 	mobile(127, -100);
 	drive(127, -500);
 	//mobile out
@@ -798,6 +798,7 @@ void mobile20Right2(){ //mobile right 20
 	dr4b(100,2300);
 	motor[mChainbar] = 127;
 	drive(127, -1200);
+
 	motor[mChainbar] = 0;
 	dr4b(100,2275);
 	motor[mClaw] = -127;
@@ -1039,40 +1040,41 @@ void pragmaSkills(){ //Programming Skills
 	motor[mClaw] = -127;
 	wait1Msec(400);
 	motor[mClaw] = 0;
-	drive(127, -1200);
+	drive(127, -1000);
 	motor[mClaw] = 0;
-	PIDturnG(0.5, 1350); //135
+	PIDturnG(0.7, -2250); //135
 	driveTime(75,150, 750);
 	mobile(127,-900);
 	drive(127,-200);
 
 	mobile(127, -100);
-	PIDturnG(0.5, 1200);
+	PIDturnG(0.7, 1200);
 	dr4b(127, 3000);
 	driveTime(127,-750, 1000);
 	mobile(127, -900);
 	drive(127, 200);
-	PIDturnG(0.5, 325);
-	dr4b(127,3000);
+	dr4b(127,2600);
+	PIDturnG(0.7, 325);
 	driveMobile(100, 1400);
-	mobile(127, -50);
+	mobile(127, -100);
 	drive(127,-lastDis-450);
 	PIDturnG(0.5, -800);
-	drive(127, 350);
+	drive(127, 500);
 	PIDturnG(0.5, -900);
+	drive(127,-200);
 	driveTime(127, 1000, 2500);
 	mobile(127,-900);
-	mobile(127, -50);
+	mobile(127, -100);
 	drive(127, -500);
 
-	PIDturnG(0.5, -900);
+	PIDturnG(0.7, -900);
 	drive(127, -250);
-	PIDturnG(0.5, -900);
+	PIDturnG(0.7, -900);
 	driveTime(69, -350, 800);
 	mobile(127, -900);
 	driveMobile(127,1000);
 	mobile(127,-200);
-	PIDturnG(0.5, -1800);
+	PIDturnG(0.7, -1800);
 	driveTime(85, 1000, 2500);
 
 	mobile(127, -900);
@@ -1083,12 +1085,10 @@ void pragmaSkills(){ //Programming Skills
 	mobile(127, -900);
 	driveMobile(127,3000);
 	mobile(127, -200);
-	drive(127, 650);
+	drive(127, 1300);
 	PIDturnG(0.5, -900);
-	drive(127, -350);
+	drive(127, -450);
 	PIDturnG(0.5, 900);
-	rDrive(80);
-	wait1Msec(100);
 	driveTime(127, 1000, 2500);
 	mobile(127,-900);
 	mobile(127, -50);
@@ -1097,6 +1097,7 @@ void pragmaSkills(){ //Programming Skills
 }
 
 void autonTest(){
+	PIDturnG(.5,1800);
 }
 
 void autonSelecter(){
