@@ -66,6 +66,29 @@ void rDrive(int pwr){//intake power
 	//Set right motors to a certain power
 }
 
+int baseGyroBuffer[5] = {SensorValue[gBase1], SensorValue[gBase1], SensorValue[gBase1], SensorValue[gBase1], SensorValue[gBase1]};
+int baseGyroFilter() {
+		int valueSum = 0;
+		for(int i = 0; i < 4; i++) {
+			baseGyroBuffer[i] = baseGyroBuffer[i+1];
+			sum += baseGyroBuffer[i];
+		}
+		baseGyroBuffer[4] = SensorValue[gBase1];
+		sum += baseGyroBuffer[4];
+		return sum/5;
+}
+
+void straightDrive(int power) {
+	float deviation = baseGyroFilter()/250;
+	rDrive((int)((1.0-deviation)*power));
+	lDrive((int)((1.0+deviation)*power));
+}
+
+void stopDrive() {
+	lDrive(0);
+	rDrive(0);
+}
+
 void Base(){//Configure base control joysticks
 	if((LeftJoyMV != 0 && RightJoyMV != 0) || (vexRT[Btn5D] + vexRT[Btn5U] != 0) || (SensorValue[jAuton1]*SensorValue[jAuton2]*SensorValue[jAuton4]*SensorValue[jAuton8]*SensorValue[jAuton16] == 1)){
 		rDrive(RightJoyMV);
