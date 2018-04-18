@@ -167,7 +167,7 @@ void driveMobile(int pwr, int dis){
 }
 
 //better 0ptimization??
-void mobilePickup(int pwr){
+void mobilePickup(int pwr, int dis){
 	mogoDone = false;
 	while(((dis < 0 && SensorValue[qLeftDrive11] >= dis && SensorValue[qRightDrive12] <= -dis) ||
 		(dis > 0 && SensorValue[qLeftDrive11] <= dis && SensorValue[qRightDrive12] >= -dis)) && (SensorValue[lMobile] >= 2000)){
@@ -307,14 +307,15 @@ void trickStationBlockRight(){
 }
 
 void threeCone(int pwr, int dis){
-	motor[mRollers] = 127; 						//hold in cone
-	startTask(mogoDown);							//begin lowering mobile goal
-	driveMobile(127,1500);
-	motor[mRollers] = rollerPassive;
+	motor[mRollers] = 127; 						//pull in cone
+	/*startTask(mogoDown);							//begin lowering mobile goal
+	driveMobile(127,1500);*/						//drive until mobile goal is seated
+	mobilePickup(127, 1500);					//lower mogo holder and go get mogo
+	motor[mRollers] = rollerPassive;	//reduce rollers to cone holding power
 	startTask(mogoUp);
 	waitUntil(mogoDone);
 	dr4b(127, 3300);
-	startTask(coneOut);
+	/*startTask(coneOut);
 	drive(90,150);
 	waitUntil(coneDone);
 	motor[mRollers] = 127;
@@ -329,7 +330,7 @@ void threeCone(int pwr, int dis){
 	waitUntil(fourBarDone);
 	startTask(coneOut);
 	dr4b(100,3300);
-	/*startTask(fourBarDown);
+	startTask(fourBarDown);
 	drive(90,135);
 	dr4b(100,3300);
 	motor[mRollers] = 127;
