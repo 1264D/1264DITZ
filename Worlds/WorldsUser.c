@@ -6,7 +6,7 @@ int LeftJoyMH; //Main Left X
 int LeftJoySH; //Partner Left X
 int RightJoyMH; //Main Right X
 int RightJoySH; //Partner Right X
-static int liftMobileAngle = 3100;
+static int liftMobileAngle = 3400;
 int rollerPassive = 25;
 
 string mainBattery, backupBattery, powerBattery; //String for lcd
@@ -64,6 +64,44 @@ void rDrive(int pwr){//intake power
 	motor[mRightFront] = PowerCap(pwr);
 	motor[mRightBack] = PowerCap(pwr);
 	//Set right motors to a certain power
+}
+
+int baseGyroBuffer[5] = {SensorValue[gBase1], SensorValue[gBase1], SensorValue[gBase1], SensorValue[gBase1], SensorValue[gBase1]};
+int baseGyroFilter() {
+		int sum = 0;
+		for(int i = 0; i < 4; i++) {
+			baseGyroBuffer[i] = baseGyroBuffer[i+1];
+			sum += baseGyroBuffer[i];
+		}
+		baseGyroBuffer[4] = SensorValue[gBase1];
+		sum += baseGyroBuffer[4];
+		return sum/5;
+}
+
+int liftPotBuffer[2] = {SensorValue[pLift2],SensorValue[pLift2]};
+int liftPotFilter(){
+		if(!(SensorValue[pLift2] - liftPotBuffer[1] >= 150)){
+			liftPotBuffer[0] = liftPotBuffer[1];
+			liftPotBuffer[1] = SensorValue[pLift2];
+		}
+		return liftPotBuffer[1];
+}
+
+void straightDrive(int power) {
+	float deviation = 1.0*baseGyroFilter()/90;
+	rDrive((int)((1.0-deviation)*power));
+	lDrive((int)((1.0+deviation)*power));
+}
+
+void backStraightDrive(int power) {
+	float deviation = 1.0*baseGyroFilter()/100;
+	rDrive((int)((1.0+deviation)*power));
+	lDrive((int)((1.0-deviation)*power));
+}
+
+void stopDrive() {
+	lDrive(0);
+	rDrive(0);
 }
 
 void Base(){//Configure base control joysticks
