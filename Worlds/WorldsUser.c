@@ -6,13 +6,12 @@ int LeftJoyMH; //Main Left X
 int LeftJoySH; //Partner Left X
 int RightJoyMH; //Main Right X
 int RightJoySH; //Partner Right X
-static int liftMobileAngle = 3400;
+static int liftMobileAngle = 3450;
 int rollerPassive = 25;
 
 string mainBattery, backupBattery, powerBattery; //String for lcd
 int autonNumber;
-string autonString;
-string autonName;
+string autonString, autonName;
 int barBurnout;
 bool mobileDisable = true;
 bool liftDisable = false;
@@ -134,7 +133,7 @@ void Mobile(){//configure mobile goal intake control
 
 void Cone(){//configure claw and chainbar control
 	motor[mRollers] = PowerCap(vexRT[Btn6DXmtr2]*-157 + vexRT[Btn6UXmtr2]*97 + rollerPassive);//claw motion is controlled via right d-pad
-	if(RightJoySV <= -50 && SensorValue[p4Bar] >= 1200 && SensorValue[p4Bar] <= 1600 ){
+	if(RightJoySV <= -50 && SensorValue[p4Bar] >= 1000 && SensorValue[p4Bar] <= 1600){
 		barBurnout = 1;
 	}
 	else{

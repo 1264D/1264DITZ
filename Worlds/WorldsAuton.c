@@ -403,7 +403,7 @@ void trickStationMogoLeft(){
 
 void trickStationBlockLeft(){
 	trickStation1(-900);
-	station2Block(x);
+	station2Block(600);
 }
 
 void trickStationRight(){
@@ -417,13 +417,13 @@ void trickStationMogoRight(){
 
 void trickStationBlockRight(){
 	trickStation1(900);
-	station2Block(x);
+	station2Block(-600);
 }
 
 bool hitCone1 = false;
 int trueDis = 0;
 
-void threeCone(int pwr, int dis){
+void threeConeLeft(int pwr, int dis){
 	motor[mRollers] = 127; 						//pull in cone
 	mobilePickup(127, 1400);					//lower mogo holder and go get mogo
 	motor[mRollers] = 49;	//reduce rollers to cone holding power
@@ -488,9 +488,74 @@ void threeCone(int pwr, int dis){
 	motor[mLift] = 0;
 }
 
+void threeConeRight(int pwr, int dis){
+	motor[mRollers] = 127; 						//pull in cone
+	mobilePickup(127, 1600);					//lower mogo holder and go get mogo
+	motor[mRollers] = 49;	//reduce rollers to cone holding power
+	startTask(mogoUp);
+	waitUntil(mogoDone);
+	wait1Msec(254);
+	startTask(coneOut);      //cone 1
+
+	if(lastDis >= 1330){
+		hitCone1 = true;
+		trueDis = lastDis;
+	}
+	writeDebugStreamLine("Forward Last dis: %d", lastDis);
+	if(hitCone1)
+		straightDriveDis(90, 202);
+	else
+		straightDriveDis(90,1470-lastDis);
+	waitUntil(coneDone);
+	motor[mRollers] = 100;
+	startTask(fourBarDown);
+	dr4b(127,3550);
+	motor[mLift] = -127;
+	waitUntil(fourBarDone);
+	motor[m4Bar] = -127;
+	wait1Msec(400);
+	motor[mRollers] = 80;
+	motor[mLift] = 0;
+	backupDis = dis;
+	backupPower = pwr;
+	//startTask(backup);
+  dr4b(120, 3193);
+	startTask(fourBarUp);
+	straightDriveDis(100, 200);
+	waitUntil(fourBarDone);
+	if(SensorValue[pLift2] < 3400)
+		dr4b(127, 3400);
+	startTask(coneOut);
+	lDrive(50);
+
+	//cone 2
+  waitUntil(coneDone);
+  lDrive(0);
+  dr4b(100, 3380);
+  startTask(fourBarDown);
+	motor[mRollers] = 127;
+	dr4b(100,3560);
+	motor[mLift] = -127;
+	motor[m4Bar] = -127;
+	wait1Msec(309);
+	motor[mRollers] = 80;
+	backupDis = dis;
+	backupPower = pwr;
+	startTask(backup);
+	dr4b(100,3223);
+	startTask(fourBarUp);
+	waitUntil(fourBarDone);
+	motor[mLift] = -127;
+	wait1Msec(200);
+	startTask(coneOut);
+	motor[mLift] = 100;
+	wait1Msec(118);
+	motor[mLift] = 0;
+}
+
 void mogo20Left3(){
 	//Oh great 254, please let this autonomous work
-	threeCone(127, -1477);
+	threeConeLeft(127, -1477);
 	waitUntil(backupDone);
 	motor[m4Bar] = 45;
 	PIDturnG(0.6,450);
@@ -505,7 +570,7 @@ void mogo20Left3(){
 }
 
 void mogo10Left3(){
-	threeCone(127, -1477);
+	threeConeLeft(127, -1477);
 	waitUntil(backupDone);
 	PIDturnG(0.6,450);
 	drive(95,-78);
@@ -517,7 +582,7 @@ void mogo10Left3(){
 }
 
 void mogo5Left3(){
-	threeCone(127, -1400);
+	threeConeLeft(127, -1400);
 	waitUntil(backupDone);
 	PIDturnG(0.5, 1350);
 	dr4b(127,3000);
@@ -526,37 +591,39 @@ void mogo5Left3(){
 }
 
 void mogo20Right3(){
-	threeCone(127, -1300);
-	PIDturnG(0.5,1400);
-	drive(85,450);
-	PIDturnG(0.5,900);
-	driveTime(127,700, 2750);
+	threeConeRight(127, -1577);
+	waitUntil(backupDone);
+	motor[m4Bar] = 45;
+	PIDturnG(0.6, 1350);
+	drive(95, 550);
+	PIDturnG(0.7,900);
+	driveTime(127,740,2999);
 	startTask(mogoDown);
 	waitUntil(mogoDone);
+	startTask(fourBarUp);
 	startTask(mogoUp);
 	drive(127, -500);
 }
 
 void mogo10Right3(){
-	threeCone(127, -1100);
-	PIDturnG(0.5, 2250);
+	threeConeRight(127, -1477);
+	waitUntil(backupDone);
+	PIDturnG(0.5, 2200);
 	driveTime(75,118, 750);
-	startTask(mogoDown);
+	startTask(mogoDownCarefully);
 	waitUntil(mogoDone);
 	drive(127,-500);
 	PIDturnG(0.5, -200);
 	drive(127,-1000);
-	PIDturnG(0.5, -1000);
 }
 
 void mogo5Right3(){
-	threeCone(127, -1100);
-	PIDturnG(0.5, 2250);
-	drive(90, -150);
-	startTask(mogoDown);
-	waitUntil(mogoDone);
-	drive(127,-1500);
-	PIDturnG(0.5, -900);
+	threeConeRight(127, -1100);
+	waitUntil(backupDone);
+	PIDturnG(0.5, -1350);
+	dr4b(127,3000);
+	startTask(mogoDownCarefully);
+	straightDriveDis(127,-1600);
 }
 
 void trick20Left3(){
